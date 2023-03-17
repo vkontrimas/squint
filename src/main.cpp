@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdlib>
+#include <memory>
 #include <X11/Xlib.h>
 
 namespace {
@@ -10,8 +11,16 @@ namespace {
   }
 }
 
+struct DisplayDeleter {
+  void operator()(Display* display) {
+    XCloseDisplay(display);
+  }
+};
+
+using DisplayPtr = std::unique_ptr<Display, DisplayDeleter>;
+
 int main(int, char**) { 
-  Display* display = XOpenDisplay(getDisplay());
+  DisplayPtr display{XOpenDisplay(getDisplay())};
   assert(display);
 
   return 0; 
