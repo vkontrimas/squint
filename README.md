@@ -1,0 +1,2 @@
+# squint
+Blurs your screen 👓
