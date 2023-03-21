@@ -7,6 +7,7 @@
 #include <X11/extensions/Xrender.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
+#include <unistd.h> // for sleep() only
 
 namespace {
   const char* getDisplay() {
@@ -124,6 +125,30 @@ int main(int, char**) {
   assert(bestSamples > -1);
   auto framebufferConfig = framebufferConfigs[bestIndex];
   XFree(framebufferConfigs);
+
+  // Get visual
+  XVisualInfo* visualInfo = glXGetVisualFromFBConfig(display.get(), framebufferConfig);
+  Colormap colorMap = XCreateColormap(
+    display.get(), RootWindow(display.get(), visualInfo->screen), visualInfo->visual, AllocNone
+  );
+  XSetWindowAttributes windowAttribs;
+  windowAttribs.colormap = colorMap;
+  windowAttribs.background_pixmap = None;
+  windowAttribs.border_pixel = 0;
+  windowAttribs.event_mask = StructureNotifyMask;
+  Window window = XCreateWindow(
+    display.get(),
+    RootWindow(display.get(), visualInfo->screen),
+    0, 0, 100, 100, 0, visualInfo->depth, InputOutput,
+    visualInfo->visual,
+    CWBorderPixel | CWColormap | CWEventMask, &windowAttribs
+  );
+  XFree(visualInfo);
+  assert(window);
+  XStoreName(display.get(), window, "foo");
+  XMapWindow(display.get(), window);
+
+  sleep(2);
 
   return 0; 
 }
