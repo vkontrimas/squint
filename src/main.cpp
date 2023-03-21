@@ -24,6 +24,12 @@ struct DisplayDeleter {
 };
 using DisplayPtr = std::unique_ptr<Display, DisplayDeleter>;
 
+static bool contextCreationError = false;
+int customXErrorHandlerForGLInit(Display*, XErrorEvent*) {
+  contextCreationError = true;
+  return 0;
+}
+
 int main(int, char**) { 
   // 🤢 this is ugly code, pls ignore
 
@@ -148,7 +154,35 @@ int main(int, char**) {
   XStoreName(display.get(), window, "foo");
   XMapWindow(display.get(), window);
 
+  // Create GL context
+  // TODO: X error handler?
+  // TODO: In the future we should check GLX_ARB_create_context extension is supported
+  //       for now assuming it is.
+  using glXCreateContextAttribsARBProc = GLXContext (*)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+  glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 
+    (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
   sleep(2);
+
+  contextCreationError = false;
+  auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
+
+  // TODO: Robustness. For now assuming we're creating GL 3.0 context
+  int contextAttributes[] = {
+    GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+    GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+    None
+  };
+
+  GLXContext glContext = glXCreateContextAttribsARB(
+    display.get(),
+    framebufferConfig,
+    0,
+    True,
+    contextAttributes
+  );
+  XSync(display.get(), False);
+  assert(!contextCreationError && glContext);
+  XSetErrorHandler(oldErrorHandler);
 
   return 0; 
 }
