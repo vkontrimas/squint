@@ -13,10 +13,6 @@ namespace {
   }
 }
 
-struct Rect {
-  int x, y, width, height;
-};
-
 struct DisplayDeleter {
   void operator()(Display* display) {
     XCloseDisplay(display);
@@ -57,6 +53,7 @@ int main(int, char**) {
   XImage* output = XGetImage(display.get(), pixmap, 0, 0, rootAttribs.width, rootAttribs.height, AllPlanes, ZPixmap);
   assert(output);
 
+  // write file out as test
   std::fstream file {"test.raw", std::ios::binary | std::ios::out};
   file.write(output->data, output->width * output->height * 4);
 
