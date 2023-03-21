@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <fstream>
 #include <X11/Xlib.h>
@@ -66,6 +67,13 @@ int main(int, char**) {
   /*
    * OPENGL CONTEXT EXPERIMENT
    */
+  // Verify GLX version
+  int glxMajor, glxMinor;
+  auto success = glXQueryVersion(display.get(), &glxMajor, &glxMinor);
+  std::cout << "GLX v" << glxMajor << "." << glxMinor << std::endl;
+  assert(success); assert(glxMajor >= 1 && glxMinor >= 3);
+
+  // Grab framebuffer config info
   const static int visualAttributes[] = {
     GLX_X_RENDERABLE, True,
     GLX_DRAWABLE_TYPE, GLX_WINDOW,
@@ -81,9 +89,41 @@ int main(int, char**) {
     GLX_DOUBLEBUFFER, True, // TODO: nor double buffer (we draw once?)
     // TODO: maybe we just enable these?
     // GLX_SAMPLE_BUFFERS, 1,
-    // GLX_SAMPLES, 4
+    // GLX_SAMPLES, 4,
     None
   };
+
+  int framebufferConfigCount;
+  GLXFBConfig* framebufferConfigs = glXChooseFBConfig(
+    display.get(), DefaultScreen(display.get()), visualAttributes, &framebufferConfigCount
+  ); 
+  assert(framebufferConfigs);
+  std::cout << "# FBC: " << framebufferConfigCount << std::endl;
+
+  int bestIndex = -1;
+  int bestSamples = -1;
+  for (int i = 0; i < framebufferConfigCount; ++i) {
+    XVisualInfo* visualInfo = glXGetVisualFromFBConfig(display.get(), framebufferConfigs[i]);
+
+    if (visualInfo) {
+      int sampleBuffers = 0;
+      glXGetFBConfigAttrib(display.get(), framebufferConfigs[i], GLX_SAMPLE_BUFFERS, &sampleBuffers);
+      int samples = 0;
+      std::cout << "B: " << sampleBuffers << " S: " << samples << std::endl;
+      glXGetFBConfigAttrib(display.get(), framebufferConfigs[i], GLX_SAMPLES, &samples);
+      if (bestIndex  == -1 || (sampleBuffers && samples > bestSamples)) {
+        bestIndex = i;
+        bestSamples = samples;
+      }
+    }
+
+    XFree(visualInfo);
+  }
+  std::cout << "samples: " << bestSamples << std::endl;
+  assert(bestIndex > -1);
+  assert(bestSamples > -1);
+  auto framebufferConfig = framebufferConfigs[bestIndex];
+  XFree(framebufferConfigs);
 
   return 0; 
 }
