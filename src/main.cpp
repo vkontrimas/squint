@@ -77,19 +77,18 @@ int main(int, char**) {
   // Verify GLX version
   int glxMajor, glxMinor;
   auto success = glXQueryVersion(display.get(), &glxMajor, &glxMinor);
-  std::cout << "GLX v" << glxMajor << "." << glxMinor << std::endl;
   assert(success); assert(glxMajor >= 1 && glxMinor >= 3);
 
   // Grab framebuffer config info
   const static int visualAttributes[] = {
     GLX_X_RENDERABLE, True,
-    GLX_DRAWABLE_TYPE, GLX_WINDOW,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
     GLX_RENDER_TYPE, GLX_RGBA_BIT,
     GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
     // TODO: allowing for float RGB would allow more precision before we downrender to final image
     GLX_RED_SIZE, 8,
-    GLX_BLUE_SIZE, 8,
     GLX_GREEN_SIZE, 8,
+    GLX_BLUE_SIZE, 8,
     GLX_ALPHA_SIZE, 8,
     GLX_DEPTH_SIZE, 24, // TODO: technically we don't care about the depth size
     GLX_STENCIL_SIZE, 8, // TODO: nor do we care about stencil size?
@@ -105,7 +104,6 @@ int main(int, char**) {
     display.get(), DefaultScreen(display.get()), visualAttributes, &framebufferConfigCount
   ); 
   assert(framebufferConfigs);
-  std::cout << "# FBC: " << framebufferConfigCount << std::endl;
 
   int bestIndex = -1;
   int bestSamples = -1;
@@ -113,10 +111,9 @@ int main(int, char**) {
     XVisualInfo* visualInfo = glXGetVisualFromFBConfig(display.get(), framebufferConfigs[i]);
 
     if (visualInfo) {
-      int sampleBuffers = 0;
+      int sampleBuffers;
       glXGetFBConfigAttrib(display.get(), framebufferConfigs[i], GLX_SAMPLE_BUFFERS, &sampleBuffers);
-      int samples = 0;
-      std::cout << "B: " << sampleBuffers << " S: " << samples << std::endl;
+      int samples;
       glXGetFBConfigAttrib(display.get(), framebufferConfigs[i], GLX_SAMPLES, &samples);
       if (bestIndex  == -1 || (sampleBuffers && samples > bestSamples)) {
         bestIndex = i;
@@ -126,7 +123,6 @@ int main(int, char**) {
 
     XFree(visualInfo);
   }
-  std::cout << "samples: " << bestSamples << std::endl;
   assert(bestIndex > -1);
   assert(bestSamples > -1);
   auto framebufferConfig = framebufferConfigs[bestIndex];
@@ -161,7 +157,6 @@ int main(int, char**) {
   using glXCreateContextAttribsARBProc = GLXContext (*)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
   glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 
     (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
-  sleep(2);
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
@@ -173,6 +168,7 @@ int main(int, char**) {
     None
   };
 
+
   GLXContext glContext = glXCreateContextAttribsARB(
     display.get(),
     framebufferConfig,
@@ -180,9 +176,31 @@ int main(int, char**) {
     True,
     contextAttributes
   );
+
+
   XSync(display.get(), False);
   assert(!contextCreationError && glContext);
   XSetErrorHandler(oldErrorHandler);
+
+  assert(glXIsDirect(display.get(), glContext));
+
+  // Try drawing?
+  glXMakeCurrent(display.get(), window, glContext);
+
+  glClearColor(1.0, 0.5, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glXSwapBuffers(display.get(), window);
+  sleep(1);
+
+  glClearColor(0.0, 0.5, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glXSwapBuffers(display.get(), window);
+  sleep(1);
+
+  glXMakeCurrent(display.get(), 0, nullptr);
+  glXDestroyContext(display.get(), glContext);
+  XDestroyWindow(display.get(), window);
+  XFreeColormap(display.get(), colorMap);
 
   return 0; 
 }
