@@ -158,6 +158,15 @@ int main(int, char**) {
   glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 
     (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
 
+  using glGenBuffersProc = void (*)(GLsizei, GLuint*);
+  glGenBuffersProc glGenBuffers = (glGenBuffersProc)glXGetProcAddressARB((const GLubyte*)"glGenBuffers");
+
+  using glBindBufferProc = void (*)(GLenum, GLuint);
+  glBindBufferProc glBindBuffer = (glBindBufferProc)glXGetProcAddressARB((const GLubyte*)"glBindBuffer");
+
+  using glBufferDataProc = void (*)(GLenum, GLsizeiptr, const GLvoid*, GLenum);
+  glBufferDataProc glBufferData = (glBufferDataProc)glXGetProcAddressARB((const GLubyte*)"glBufferData");
+
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
 
@@ -167,7 +176,6 @@ int main(int, char**) {
     GLX_CONTEXT_MINOR_VERSION_ARB, 0,
     None
   };
-
 
   GLXContext glContext = glXCreateContextAttribsARB(
     display.get(),
@@ -187,16 +195,28 @@ int main(int, char**) {
   // Try drawing?
   glXMakeCurrent(display.get(), window, glContext);
 
+  const GLfloat vertices[3 * 4] {
+    0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f,
+    1.0f, 1.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+  };
+
+  GLuint vertexBuffer;
+  glGenBuffers(1, &vertexBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
   glClearColor(1.0, 0.5, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
-  glXSwapBuffers(display.get(), window);
-  sleep(1);
 
-  glClearColor(0.0, 0.5, 1.0, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT);
-  glXSwapBuffers(display.get(), window);
-  sleep(1);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+  glXSwapBuffers(display.get(), window);
+  sleep(5);
+
+  // Cleanup
   glXMakeCurrent(display.get(), 0, nullptr);
   glXDestroyContext(display.get(), glContext);
   XDestroyWindow(display.get(), window);
