@@ -9,6 +9,8 @@
 #include <GL/glx.h>
 #include <unistd.h> // for sleep() only
 
+#include <shaders/test.frag.glsl.h>
+
 namespace {
   const char* getDisplay() {
     constexpr const char* kDefaultDisplay = ":0";
@@ -31,6 +33,7 @@ int customXErrorHandlerForGLInit(Display*, XErrorEvent*) {
 }
 
 int main(int, char**) { 
+  std::cout << shaders_test_frag_glsl << std::endl;
   // 🤢 this is ugly code, pls ignore
 
   DisplayPtr display{XOpenDisplay(getDisplay())};
