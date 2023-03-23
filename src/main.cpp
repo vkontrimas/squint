@@ -243,11 +243,11 @@ int main(int, char**) {
   glBindAttribLocation(program, vertexLocation, "position");
 
   // Set up vertex buffer
-  const GLfloat vertices[2 * 4] {
-    0.0f, 0.0f,
-    1.0f, 0.0f,
-    1.0f, 1.0f,
-    0.0f, 1.0f
+  const GLfloat vertices[] {
+    -1.0f, -1.0f,
+     1.0f, -1.0f,
+     1.0f,  1.0f,
+    -1.0f,  1.0f
   };
 
   GLuint vertexBuffer;
@@ -259,11 +259,11 @@ int main(int, char**) {
   glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, false, 0, nullptr);
 
   // Try drawing?
-  glClearColor(1.0, 0.5, 0.0, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(program);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
 
