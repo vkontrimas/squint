@@ -17,6 +17,12 @@ namespace {
     const auto display = getenv("DISPLAY");
     return display ? display : kDefaultDisplay;
   }
+
+  template<typename ProcType>
+  auto loadGLFunction(const char* name) {
+    // TODO: Could we wrap this in an error checker for debug builds?
+    return (ProcType*)glXGetProcAddressARB((const GLubyte*)name);
+  }
 }
 
 struct DisplayDeleter {
@@ -157,18 +163,10 @@ int main(int, char**) {
   // TODO: X error handler?
   // TODO: In the future we should check GLX_ARB_create_context extension is supported
   //       for now assuming it is.
-  using glXCreateContextAttribsARBProc = GLXContext (*)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
-  glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 
-    (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
-
-  using glGenBuffersProc = void (*)(GLsizei, GLuint*);
-  glGenBuffersProc glGenBuffers = (glGenBuffersProc)glXGetProcAddressARB((const GLubyte*)"glGenBuffers");
-
-  using glBindBufferProc = void (*)(GLenum, GLuint);
-  glBindBufferProc glBindBuffer = (glBindBufferProc)glXGetProcAddressARB((const GLubyte*)"glBindBuffer");
-
-  using glBufferDataProc = void (*)(GLenum, GLsizeiptr, const GLvoid*, GLenum);
-  glBufferDataProc glBufferData = (glBufferDataProc)glXGetProcAddressARB((const GLubyte*)"glBufferData");
+  auto glXCreateContextAttribsARB = loadGLFunction<GLXContext(Display*, GLXFBConfig, GLXContext, Bool, const int*)>("glXCreateContextAttribsARB");
+  auto glGenBuffers = loadGLFunction<void(GLsizei, GLuint*)>("glGenBuffers");
+  auto glBindBuffer = loadGLFunction<void(GLenum, GLuint)>("glBindBuffer");
+  auto glBufferData = loadGLFunction<void(GLenum, GLsizeiptr, const GLvoid*, GLenum)>("glBufferData");
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
