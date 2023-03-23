@@ -39,7 +39,6 @@ int customXErrorHandlerForGLInit(Display*, XErrorEvent*) {
 }
 
 int main(int, char**) { 
-  std::cout << squint_glsl_test_frag << std::endl;
   // 🤢 this is ugly code, pls ignore
 
   DisplayPtr display{XOpenDisplay(getDisplay())};
@@ -165,8 +164,20 @@ int main(int, char**) {
   //       for now assuming it is.
   auto glXCreateContextAttribsARB = loadGLFunction<GLXContext(Display*, GLXFBConfig, GLXContext, Bool, const int*)>("glXCreateContextAttribsARB");
   auto glGenBuffers = loadGLFunction<void(GLsizei, GLuint*)>("glGenBuffers");
+  auto glDeleteBuffers = loadGLFunction<void(GLsizei, GLuint*)>("glDeleteBuffers");
   auto glBindBuffer = loadGLFunction<void(GLenum, GLuint)>("glBindBuffer");
   auto glBufferData = loadGLFunction<void(GLenum, GLsizeiptr, const GLvoid*, GLenum)>("glBufferData");
+  auto glCreateShader = loadGLFunction<GLuint(GLenum)>("glCreateShader");
+  auto glDeleteShader = loadGLFunction<void(GLuint)>("glDeleteShader");
+  auto glShaderSource = loadGLFunction<void(GLuint, GLsizei, const GLchar**, const GLint*)>("glShaderSource");
+  auto glCompileShader = loadGLFunction<void(GLuint)>("glCompileShader");
+  auto glGetShaderiv = loadGLFunction<void(GLuint, GLenum, GLint*)>("glGetShaderiv");
+  auto glCreateProgram = loadGLFunction<GLuint()>("glCreateProgram");
+  auto glDeleteProgram = loadGLFunction<void(GLuint)>("glDeleteProgram");
+  auto glAttachShader = loadGLFunction<void(GLuint, GLuint)>("glAttachShader");
+  auto glLinkProgram = loadGLFunction<void(GLuint)>("glLinkProgram");
+  auto glUseProgram = loadGLFunction<void(GLuint)>("glUseProgram");
+  auto glGetProgramiv = loadGLFunction<void(GLuint, GLenum, GLint*)>("glGetProgramiv");
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
@@ -193,9 +204,28 @@ int main(int, char**) {
 
   assert(glXIsDirect(display.get(), glContext));
 
-  // Try drawing?
+  // Make context current
   glXMakeCurrent(display.get(), window, glContext);
 
+  // Set up shader
+  const char* foo = (char*)squint_glsl_test_frag; // TODO: annoying xxd outputs unsigned char
+  GLuint shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(shader, 1, &foo, nullptr);
+  glCompileShader(shader);
+
+  GLint compileSuccess;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
+  assert(compileSuccess);
+
+  GLuint program = glCreateProgram();
+  glAttachShader(program, shader);
+  glLinkProgram(program);
+
+  GLint linkSuccess;
+  glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
+  assert(linkSuccess);
+
+  // Set up vertex buffer
   const GLfloat vertices[3 * 4] {
     0.0f, 0.0f, 0.0f,
     1.0f, 0.0f, 0.0f,
@@ -208,16 +238,24 @@ int main(int, char**) {
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  // Try drawing?
   glClearColor(1.0, 0.5, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  glUseProgram(program);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glUseProgram(0);
 
   glXSwapBuffers(display.get(), window);
   sleep(5);
 
   // Cleanup
+  glDeleteBuffers(1, &vertexBuffer);
+  glDeleteProgram(program);
+  glDeleteShader(shader);
+
   glXMakeCurrent(display.get(), 0, nullptr);
   glXDestroyContext(display.get(), glContext);
   XDestroyWindow(display.get(), window);
