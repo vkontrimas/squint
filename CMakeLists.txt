@@ -10,6 +10,7 @@ file(MAKE_DIRECTORY ${GENERATED_INCLUDE_PATH}/squint/glsl)
 set(
   SHADERS
   glsl/test.frag
+  glsl/test.vert
 )
 
 foreach(SHADER ${SHADERS})

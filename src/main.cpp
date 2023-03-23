@@ -10,6 +10,7 @@
 #include <unistd.h> // for sleep() only
 
 #include <squint/glsl/test.frag.h>
+#include <squint/glsl/test.vert.h>
 
 namespace {
   const char* getDisplay() {
@@ -178,6 +179,9 @@ int main(int, char**) {
   auto glLinkProgram = loadGLFunction<void(GLuint)>("glLinkProgram");
   auto glUseProgram = loadGLFunction<void(GLuint)>("glUseProgram");
   auto glGetProgramiv = loadGLFunction<void(GLuint, GLenum, GLint*)>("glGetProgramiv");
+  auto glBindAttribLocation = loadGLFunction<void(GLuint, GLuint, const GLchar*)>("glBindAttribLocation");
+  auto glEnableVertexAttribArray = loadGLFunction<void(GLuint)>("glEnableVertexAttribArray");
+  auto glVertexAttribPointer = loadGLFunction<void(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid*)>("glVertexAttribPointer");
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
@@ -208,29 +212,42 @@ int main(int, char**) {
   glXMakeCurrent(display.get(), window, glContext);
 
   // Set up shader
-  const char* foo = (char*)squint_glsl_test_frag; // TODO: annoying xxd outputs unsigned char
-  GLuint shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(shader, 1, &foo, nullptr);
-  glCompileShader(shader);
+  const char* fragmentSource = (char*)squint_glsl_test_frag; // TODO: annoying xxd outputs unsigned char
+  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
+  glCompileShader(fragmentShader);
 
-  GLint compileSuccess;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
-  assert(compileSuccess);
+  GLint fragmentCompileSuccess;
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragmentCompileSuccess);
+  assert(fragmentCompileSuccess);
+
+  const char* vertexSource = (char*)squint_glsl_test_vert; 
+  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertexShader, 1, &vertexSource, nullptr);
+  glCompileShader(vertexShader);
+
+  GLint vertexCompileSuccess;
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertexCompileSuccess);
+  assert(vertexCompileSuccess);
 
   GLuint program = glCreateProgram();
-  glAttachShader(program, shader);
+  glAttachShader(program, vertexShader);
+  glAttachShader(program, fragmentShader);
   glLinkProgram(program);
 
   GLint linkSuccess;
   glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
   assert(linkSuccess);
 
+  const GLuint vertexLocation = 0;
+  glBindAttribLocation(program, vertexLocation, "position");
+
   // Set up vertex buffer
-  const GLfloat vertices[3 * 4] {
-    0.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f,
-    1.0f, 1.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
+  const GLfloat vertices[2 * 4] {
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f
   };
 
   GLuint vertexBuffer;
@@ -238,12 +255,14 @@ int main(int, char**) {
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  glEnableVertexAttribArray(vertexLocation);
+  glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, false, 0, nullptr);
+
   // Try drawing?
   glClearColor(1.0, 0.5, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(program);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
@@ -254,7 +273,8 @@ int main(int, char**) {
   // Cleanup
   glDeleteBuffers(1, &vertexBuffer);
   glDeleteProgram(program);
-  glDeleteShader(shader);
+  glDeleteShader(fragmentShader);
+  glDeleteShader(vertexShader);
 
   glXMakeCurrent(display.get(), 0, nullptr);
   glXDestroyContext(display.get(), glContext);
