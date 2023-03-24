@@ -184,6 +184,10 @@ int main(int, char**) {
   auto glVertexAttribPointer = loadGLFunction<void(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid*)>("glVertexAttribPointer");
   auto glGetShaderInfoLog = loadGLFunction<void(GLuint, GLsizei, GLsizei*, GLchar*)>("glGetShaderInfoLog");
   auto glGetProgramInfoLog = loadGLFunction<void(GLuint, GLsizei, GLsizei*, GLchar*)>("glGetProgramInfoLog");
+  auto glGenTextures = loadGLFunction<void(GLsizei, GLuint*)>("glGenTextures");
+  auto glBindTexture = loadGLFunction<void(GLenum, GLuint)>("glBindTexture");
+  auto glTexImage2D = loadGLFunction<void(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid*)>("glTexImage2D");
+  auto glTexParameteri = loadGLFunction<void(GLenum, GLenum, GLint)>("glTexParameteri");
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
