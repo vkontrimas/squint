@@ -1,5 +1,9 @@
 #version 330
 
+uniform sampler2D screen;
+
+in vec2 fragTexCoord;
+
 void main() {
-  gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);
+  gl_FragColor = texture(screen, fragTexCoord);
 }

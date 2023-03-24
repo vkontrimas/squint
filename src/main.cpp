@@ -217,6 +217,7 @@ int main(int, char**) {
   // Make context current
   glXMakeCurrent(display.get(), window, glContext);
 
+  // Set up shader
   const auto compileShader = [=](GLenum shaderType, const char* source) {
     assert(source);
 
@@ -255,7 +256,6 @@ int main(int, char**) {
     }
   };
 
-  // Set up shader
   GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, squint_glsl_test_frag);
   GLuint vertexShader = compileShader(GL_VERTEX_SHADER, squint_glsl_test_vert);
 
@@ -267,12 +267,34 @@ int main(int, char**) {
   const GLuint vertexLocation = 0;
   glBindAttribLocation(program, vertexLocation, "position");
 
+  const GLuint uvLocation = 1;
+  glBindAttribLocation(program, uvLocation, "texCoord");
+
+  // Set up texture
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glTexImage2D(
+    GL_TEXTURE_2D, 0,
+    GL_RGBA8,
+    output->width, output->height, 0,
+    GL_RGBA,
+    GL_UNSIGNED_BYTE,
+    output->data
+  );
+
   // Set up vertex buffer
   const GLfloat vertices[] {
-    -1.0f, -1.0f,
-     1.0f, -1.0f,
-     1.0f,  1.0f,
-    -1.0f,  1.0f
+    // X     Y     U     V
+    -1.0f, -1.0f,  0.0f,  0.0f,
+     1.0f, -1.0f,  1.0f,  0.0f,
+     1.0f,  1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  0.0f,  1.0f
   };
 
   GLuint vertexBuffer;
@@ -281,7 +303,10 @@ int main(int, char**) {
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(vertexLocation);
-  glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, false, 0, nullptr);
+  glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 0));
+
+  glEnableVertexAttribArray(uvLocation);
+  glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 2));
 
   // Try drawing?
   glClearColor(0.0, 0.0, 0.0, 1.0);
