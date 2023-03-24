@@ -182,6 +182,8 @@ int main(int, char**) {
   auto glBindAttribLocation = loadGLFunction<void(GLuint, GLuint, const GLchar*)>("glBindAttribLocation");
   auto glEnableVertexAttribArray = loadGLFunction<void(GLuint)>("glEnableVertexAttribArray");
   auto glVertexAttribPointer = loadGLFunction<void(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid*)>("glVertexAttribPointer");
+  auto glGetShaderInfoLog = loadGLFunction<void(GLuint, GLsizei, GLsizei*, GLchar*)>("glGetShaderInfoLog");
+  auto glGetProgramInfoLog = loadGLFunction<void(GLuint, GLsizei, GLsizei*, GLchar*)>("glGetProgramInfoLog");
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
@@ -211,33 +213,52 @@ int main(int, char**) {
   // Make context current
   glXMakeCurrent(display.get(), window, glContext);
 
+  const auto compileShader = [=](GLenum shaderType, const char* source) {
+    assert(source);
+
+    GLuint shader = glCreateShader(shaderType);
+    assert(shader);
+
+    glShaderSource(shader, 1, &source, nullptr);
+    glCompileShader(shader);
+
+    GLint compileSuccess;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
+
+    if (!compileSuccess) {
+      constexpr GLsizei kLogLength = 1024;
+      char log[kLogLength];
+      glGetShaderInfoLog(shader, kLogLength, nullptr, log);
+      std::cout << log << std::endl;
+      std::abort();
+    }
+
+    return shader;
+  };
+
+  const auto linkProgram = [=](GLuint program) {
+    glLinkProgram(program);
+
+    GLint linkSuccess;
+    glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
+
+    if (!linkSuccess) {
+      constexpr GLsizei kLogLength = 1024;
+      char log[kLogLength];
+      glGetProgramInfoLog(program, kLogLength, nullptr, log);
+      std::cout << log << std::endl;
+      std::abort();
+    }
+  };
+
   // Set up shader
-  const char* fragmentSource = (char*)squint_glsl_test_frag; // TODO: annoying xxd outputs unsigned char
-  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
-  glCompileShader(fragmentShader);
-
-  GLint fragmentCompileSuccess;
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragmentCompileSuccess);
-  assert(fragmentCompileSuccess);
-
-  const char* vertexSource = (char*)squint_glsl_test_vert; 
-  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexSource, nullptr);
-  glCompileShader(vertexShader);
-
-  GLint vertexCompileSuccess;
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertexCompileSuccess);
-  assert(vertexCompileSuccess);
+  GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, squint_glsl_test_frag);
+  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, squint_glsl_test_vert);
 
   GLuint program = glCreateProgram();
   glAttachShader(program, vertexShader);
   glAttachShader(program, fragmentShader);
-  glLinkProgram(program);
-
-  GLint linkSuccess;
-  glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
-  assert(linkSuccess);
+  linkProgram(program);
 
   const GLuint vertexLocation = 0;
   glBindAttribLocation(program, vertexLocation, "position");
