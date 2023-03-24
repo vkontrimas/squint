@@ -192,6 +192,7 @@ int main(int, char**) {
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
 
+
   // TODO: Robustness. For now assuming we're creating GL 3.0 context
   int contextAttributes[] = {
     GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -291,10 +292,10 @@ int main(int, char**) {
   // Set up vertex buffer
   const GLfloat vertices[] {
     // X     Y     U     V
-    -1.0f, -1.0f,  0.0f,  0.0f,
-     1.0f, -1.0f,  1.0f,  0.0f,
-     1.0f,  1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  0.0f,  1.0f
+    -1.0f, -1.0f,  0.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,  0.0f,
+    -1.0f,  1.0f,  0.0f,  0.0f
   };
 
   GLuint vertexBuffer;
