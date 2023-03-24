@@ -25,6 +25,7 @@ foreach(SHADER ${SHADERS})
     COMMAND truncate -s +1 "${SOURCE_OUTPUT_INTERMEDIATE_PATH}"
     # Generate a header file
     COMMAND cd "${GENERATED_INCLUDE_PATH}" && xxd -i "squint/${SHADER}" > "${SOURCE_OUTPUT_PATH}"
+    COMMAND sed -i "s/unsigned char/const char/g" "${SOURCE_OUTPUT_PATH}"
     DEPENDS "${SOURCE_SHADER_PATH}"
   )
   list(APPEND GENERATED_SHADER_HEADERS "${SOURCE_OUTPUT_PATH}")
