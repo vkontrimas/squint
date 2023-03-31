@@ -8,6 +8,7 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <unistd.h> // for sleep() only
+#include <vector>
 
 #include <squint/glsl/test.frag.h>
 #include <squint/glsl/test.vert.h>
@@ -24,6 +25,10 @@ namespace {
     // TODO: Could we wrap this in an error checker for debug builds?
     return (ProcType*)glXGetProcAddressARB((const GLubyte*)name);
   }
+
+  void openglErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+      fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n", ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ), type, severity, message);
+    }
 }
 
 struct DisplayDeleter {
@@ -75,10 +80,6 @@ int main(int, char**) {
 
   XImage* output = XGetImage(display.get(), pixmap, 0, 0, rootAttribs.width, rootAttribs.height, AllPlanes, ZPixmap);
   assert(output);
-
-  // write file out as test
-  std::fstream file {"test.raw", std::ios::binary | std::ios::out};
-  file.write(output->data, output->width * output->height * 4);
 
   /*
    * OPENGL CONTEXT EXPERIMENT
@@ -150,14 +151,13 @@ int main(int, char**) {
   Window window = XCreateWindow(
     display.get(),
     RootWindow(display.get(), visualInfo->screen),
-    0, 0, 100, 100, 0, visualInfo->depth, InputOutput,
+    0, 0, 1, 1, 0, visualInfo->depth, InputOutput,
     visualInfo->visual,
     CWBorderPixel | CWColormap | CWEventMask, &windowAttribs
   );
   XFree(visualInfo);
   assert(window);
   XStoreName(display.get(), window, "foo");
-  XMapWindow(display.get(), window);
 
   // Create GL context
   // TODO: X error handler?
@@ -188,6 +188,14 @@ int main(int, char**) {
   auto glBindTexture = loadGLFunction<void(GLenum, GLuint)>("glBindTexture");
   auto glTexImage2D = loadGLFunction<void(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid*)>("glTexImage2D");
   auto glTexParameteri = loadGLFunction<void(GLenum, GLenum, GLint)>("glTexParameteri");
+  auto glGenRenderbuffers = loadGLFunction<void(GLsizei, GLuint*)>("glGenRenderbuffers");
+  auto glBindRenderbuffer = loadGLFunction<void(GLenum, GLuint)>("glBindRenderbuffer");
+  auto glRenderbufferStorage = loadGLFunction<void(GLenum, GLenum, GLsizei, GLsizei)>("glRenderbufferStorage");
+  auto glGenFramebuffers = loadGLFunction<void(GLsizei, GLuint*)>("glGenFramebuffers");
+  auto glBindFramebuffer = loadGLFunction<void(GLenum, GLuint)>("glBindFramebuffer");
+  auto glFramebufferRenderbuffer = loadGLFunction<void(GLenum, GLenum, GLenum, GLuint)>("glFramebufferRenderbuffer");
+  auto glCheckFramebufferStatus = loadGLFunction<GLenum(GLenum)>("glCheckFramebufferStatus");
+  auto glDebugMessageCallback = loadGLFunction<void(GLDEBUGPROC, void*)>("glDebugMessageCallback");
 
   contextCreationError = false;
   auto oldErrorHandler = XSetErrorHandler(&customXErrorHandlerForGLInit);
@@ -217,6 +225,28 @@ int main(int, char**) {
 
   // Make context current
   glXMakeCurrent(display.get(), window, glContext);
+
+  // Set up error callback
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(openglErrorCallback, 0);
+
+  // Set up framebuffer
+  std::cout << output->width << " " << output->height << std::endl;
+  GLuint colorRenderbuffer;
+  glGenRenderbuffers(1, &colorRenderbuffer);
+  assert(colorRenderbuffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, output->width, output->height);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  GLuint framebuffer;
+  glGenFramebuffers(1, &framebuffer);
+  assert(framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
+  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+  glViewport(0, 0, output->width, output->height);
 
   // Set up shader
   const auto compileShader = [=](GLenum shaderType, const char* source) {
@@ -292,10 +322,10 @@ int main(int, char**) {
   // Set up vertex buffer
   const GLfloat vertices[] {
     // X     Y     U     V
-    -1.0f, -1.0f,  0.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,  0.0f,
-    -1.0f,  1.0f,  0.0f,  0.0f
+    -1.0f, -1.0f,  0.0f,  0.0f,
+     1.0f, -1.0f,  1.0f,  0.0f,
+     1.0f,  1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  0.0f,  1.0f
   };
 
   GLuint vertexBuffer;
@@ -310,16 +340,23 @@ int main(int, char**) {
   glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 2));
 
   // Try drawing?
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClearColor(1.0, 0.0, 1.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
+#if 1
   glUseProgram(program);
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
+#endif
 
-  glXSwapBuffers(display.get(), window);
-  sleep(5);
+  // Write image to file
+  std::vector<char> buffer(output->width * output->height * 4, 0);
+  glReadPixels(0, 0, output->width, output->height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+  {
+    std::fstream file {"test.raw", std::ios::binary | std::ios::out};
+    file.write(buffer.data(), buffer.size());
+  }
 
   // Cleanup
   glDeleteBuffers(1, &vertexBuffer);
