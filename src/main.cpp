@@ -10,6 +10,8 @@
 #include <unistd.h> // for sleep() only
 #include <vector>
 
+#include "gl.hpp"
+
 #include <squint/glsl/test.frag.h>
 #include <squint/glsl/test.vert.h>
 
