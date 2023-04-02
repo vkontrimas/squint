@@ -29,6 +29,10 @@ namespace squint {
       return handle_;
     }
 
+    const HandleT& operator*() const {
+      return handle_;
+    }
+
     friend void swap(BasicHandle& a, BasicHandle& b) noexcept {
       using std::swap;
       std::swap(a.handle_, b.handle_);
