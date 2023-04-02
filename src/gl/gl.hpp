@@ -50,6 +50,12 @@ extern glUseProgramProc* glUseProgram;
 using glGetProgramivProc = void(GLuint, GLenum, GLint*);
 extern glGetProgramivProc* glGetProgramiv;
 
+using glGetUniformLocationProc = GLint (GLuint program, const GLchar* name);
+extern glGetUniformLocationProc* glGetUniformLocation;
+
+using glUniform1fProc = void (GLint location, GLfloat v0);
+extern glUniform1fProc* glUniform1f; 
+
 using glBindAttribLocationProc = void(GLuint, GLuint, const GLchar*);
 extern glBindAttribLocationProc* glBindAttribLocation;
 
