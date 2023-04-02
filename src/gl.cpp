@@ -27,7 +27,6 @@ glGenFramebuffersProc* glGenFramebuffers = nullptr;
 glBindFramebufferProc* glBindFramebuffer = nullptr;
 glFramebufferRenderbufferProc* glFramebufferRenderbuffer = nullptr;
 glCheckFramebufferStatusProc* glCheckFramebufferStatus = nullptr;
-glDebugMessageCallbackProc* glDebugMessageCallback = nullptr;
 
 void squint::loadGL(GetProcAddressFuncT* getProcAddress) {
   glGenBuffers = (glGenBuffersProc*)getProcAddress("glGenBuffers");
@@ -57,5 +56,15 @@ void squint::loadGL(GetProcAddressFuncT* getProcAddress) {
   glBindFramebuffer = (glBindFramebufferProc*)getProcAddress("glBindFramebuffer");
   glFramebufferRenderbuffer = (glFramebufferRenderbufferProc*)getProcAddress("glFramebufferRenderbuffer");
   glCheckFramebufferStatus = (glCheckFramebufferStatusProc*)getProcAddress("glCheckFramebufferStatus");
-  glDebugMessageCallback = (glDebugMessageCallbackProc*)getProcAddress("glDebugMessageCallback");
+
+  // Set up error callback in debug build
+  // TODO: Check if GL version supports it! This function is from OpenGL 4+
+  // TODO: Move this to gl_context
+#if 0
+  using glDebugMessageCallbackProc = void(GLDEBUGPROC, void*);
+  glDebugMessageCallbackProc* glDebugMessageCallback =
+    (glDebugMessageCallbackProc*)getProcAddress("glDebugMessageCallback");
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(openglErrorCallback, 0);
+#endif
 }
