@@ -38,7 +38,7 @@ int main(int, char**) {
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
-  glViewport(0, 0, output->width, output->height); // TODO: Move to Gl
+  glViewport(0, 0, output->width, output->height);
 
   // Set up shader
   const auto compileShader = [=](GLenum shaderType, const char* source) {
@@ -132,19 +132,19 @@ int main(int, char**) {
   glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 2));
 
   // Try drawing?
-  glClearColor(1.0, 0.0, 1.0, 1.0); // TODO: Move to Gl
-  glClear(GL_COLOR_BUFFER_BIT); // TODO: Move to Gl
+  glClearColor(1.0, 0.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
 #if 1
   glUseProgram(program);
-  glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // TODO: Move to Gl
+  glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
 #endif
 
   // Write image to file
   std::vector<char> buffer(output->width * output->height * 4, 0);
-  glReadPixels(0, 0, output->width, output->height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data()); // TODO: Move to Gl
+  glReadPixels(0, 0, output->width, output->height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
   {
     std::fstream file {"test.raw", std::ios::binary | std::ios::out};
     file.write(buffer.data(), buffer.size());
