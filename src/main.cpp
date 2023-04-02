@@ -1,5 +1,5 @@
 #include "gl/gl.hpp"
-#include "gl/shader.hpp"
+#include "gl/program.hpp"
 #include "gl/renderbuffer.hpp"
 #include "gl/framebuffer.hpp"
 #include "gl/texture.hpp"
