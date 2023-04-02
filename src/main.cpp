@@ -46,8 +46,8 @@ int main(int, char**) {
   GLuint screenLocation = glGetUniformLocation(*program, "screen");
   std::cout << "Screen loc: " << screenLocation << std::endl;
 
-  GLuint scaleLocation = glGetUniformLocation(*program, "scale");
-  std::cout << "Scale loc: " << scaleLocation << std::endl;
+  GLuint pixelSizeLocation = glGetUniformLocation(*program, "pixelSize");
+  std::cout << "Pixel size loc: " << pixelSizeLocation << std::endl;
 
   const GLuint vertexLocation = 0;
   glBindAttribLocation(*program, vertexLocation, "position");
@@ -97,8 +97,10 @@ int main(int, char**) {
 
 #if 1
   glUseProgram(*program);
-  constexpr float kScale = 0.05;
-  glUniform1f(scaleLocation, kScale);
+  // For pixelated squares to not be cut off, kPixelSize must be
+  // a common factor of the width and height of the screen.
+  constexpr float kPixelSize = 24;
+  glUniform1f(pixelSizeLocation, kPixelSize);
 
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
