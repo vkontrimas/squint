@@ -2,6 +2,7 @@
 #include "gl/shader.hpp"
 #include "gl/renderbuffer.hpp"
 #include "gl/framebuffer.hpp"
+#include "gl/texture.hpp"
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
@@ -48,9 +49,8 @@ int main(int, char**) {
   glBindAttribLocation(*program, uvLocation, "texCoord");
 
   // Set up texture
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  auto texture = squint::gl::genTexture();
+  glBindTexture(GL_TEXTURE_2D, *texture);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
