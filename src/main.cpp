@@ -33,6 +33,10 @@ int main(int, char**) {
    */
   auto resultImage = squint::fx::Pipeline::fromScreenshot(output)
                      | squint::fx::Pixelate{30}
+                     | squint::fx::Pixelate{30}
+                     | squint::fx::GaussianBlur
+                     | squint::fx::GaussianBlur
+                     | squint::fx::GaussianBlur
                      | squint::fx::GaussianBlur
                      | squint::fx::ToImage;
 
