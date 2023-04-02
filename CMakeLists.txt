@@ -9,7 +9,7 @@ file(MAKE_DIRECTORY ${GENERATED_INCLUDE_PATH}/squint/glsl)
 
 set(
   SHADERS
-  glsl/test.frag
+  glsl/fast_pixelate.frag
   glsl/quad.vert
 )
 

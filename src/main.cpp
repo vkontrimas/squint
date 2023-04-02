@@ -18,7 +18,7 @@
 #include <unistd.h> // for sleep() only
 #include <vector>
 
-#include <squint/glsl/test.frag.h>
+#include <squint/glsl/fast_pixelate.frag.h>
 #include <squint/glsl/quad.vert.h>
 
 int main(int, char**) { 
@@ -40,8 +40,14 @@ int main(int, char**) {
 
   // Set up shader
   auto program = squint::gl::compileProgram(
-    squint_glsl_quad_vert, squint_glsl_test_frag
+    squint_glsl_quad_vert, squint_glsl_fast_pixelate_frag
   );
+
+  GLuint screenLocation = glGetUniformLocation(*program, "screen");
+  std::cout << "Screen loc: " << screenLocation << std::endl;
+
+  GLuint scaleLocation = glGetUniformLocation(*program, "scale");
+  std::cout << "Scale loc: " << scaleLocation << std::endl;
 
   const GLuint vertexLocation = 0;
   glBindAttribLocation(*program, vertexLocation, "position");
@@ -91,6 +97,9 @@ int main(int, char**) {
 
 #if 1
   glUseProgram(*program);
+  constexpr float kScale = 0.05;
+  glUniform1f(scaleLocation, kScale);
+
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
