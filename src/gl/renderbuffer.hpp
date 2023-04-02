@@ -18,4 +18,12 @@ namespace squint::gl {
     assert(renderbuffer);
     return renderbuffer;
   }
+
+  Renderbuffer genRenderbuffer(GLenum format, int width, int height) {
+    auto buffer = genRenderbuffer(); 
+    glBindRenderbuffer(GL_RENDERBUFFER, *buffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    return buffer;
+  }
 }

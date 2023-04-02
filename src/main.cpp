@@ -27,10 +27,7 @@ int main(int, char**) {
 
   // Set up framebuffer
   std::cout << output->width << " " << output->height << std::endl;
-  auto colorRenderbuffer = squint::gl::genRenderbuffer();
-  glBindRenderbuffer(GL_RENDERBUFFER, *colorRenderbuffer);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, output->width, output->height);
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  auto colorRenderbuffer = squint::gl::genRenderbuffer(GL_RGBA8, output->width, output->height);
 
   auto framebuffer = squint::gl::genFramebuffer();
   glBindFramebuffer(GL_FRAMEBUFFER, *framebuffer);
