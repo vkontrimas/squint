@@ -7,6 +7,7 @@
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
+#include "fx/pipeline.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -30,12 +31,10 @@ int main(int, char**) {
   /*
    * FX PIPELINE EXPERIMENT
    */
-#if 0
   auto resultImage = squint::fx::Pipeline::fromScreenshot(output)
                      | squint::fx::Pixelate{30}
                      | squint::fx::GaussianBlur
-                     | squint::fx::DownloadImage;
-#endif
+                     | squint::fx::ToImage;
 
   /*
    * FAST PIXELATE EXPERIMENT
