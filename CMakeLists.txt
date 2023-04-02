@@ -40,6 +40,8 @@ add_executable(
   src/basic_handle.hpp
   src/gl/gl.hpp
   src/gl/gl.cpp
+  src/gl/shader.hpp
+  src/gl/shader.cpp
   src/x11/display.hpp
   src/x11/display.cpp
   src/x11/xhandle.hpp

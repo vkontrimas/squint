@@ -1,4 +1,5 @@
 #include "gl/gl.hpp"
+#include "gl/shader.hpp"
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
@@ -41,57 +42,15 @@ int main(int, char**) {
   glViewport(0, 0, output->width, output->height);
 
   // Set up shader
-  const auto compileShader = [=](GLenum shaderType, const char* source) {
-    assert(source);
-
-    GLuint shader = glCreateShader(shaderType);
-    assert(shader);
-
-    glShaderSource(shader, 1, &source, nullptr);
-    glCompileShader(shader);
-
-    GLint compileSuccess;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
-
-    if (!compileSuccess) {
-      constexpr GLsizei kLogLength = 1024;
-      char log[kLogLength];
-      glGetShaderInfoLog(shader, kLogLength, nullptr, log);
-      std::cout << log << std::endl;
-      std::abort();
-    }
-
-    return shader;
-  };
-
-  const auto linkProgram = [=](GLuint program) {
-    glLinkProgram(program);
-
-    GLint linkSuccess;
-    glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
-
-    if (!linkSuccess) {
-      constexpr GLsizei kLogLength = 1024;
-      char log[kLogLength];
-      glGetProgramInfoLog(program, kLogLength, nullptr, log);
-      std::cout << log << std::endl;
-      std::abort();
-    }
-  };
-
-  GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, squint_glsl_test_frag);
-  GLuint vertexShader = compileShader(GL_VERTEX_SHADER, squint_glsl_test_vert);
-
-  GLuint program = glCreateProgram();
-  glAttachShader(program, vertexShader);
-  glAttachShader(program, fragmentShader);
-  linkProgram(program);
+  auto program = squint::gl::compileProgram(
+    squint_glsl_test_vert, squint_glsl_test_frag
+  );
 
   const GLuint vertexLocation = 0;
-  glBindAttribLocation(program, vertexLocation, "position");
+  glBindAttribLocation(*program, vertexLocation, "position");
 
   const GLuint uvLocation = 1;
-  glBindAttribLocation(program, uvLocation, "texCoord");
+  glBindAttribLocation(*program, uvLocation, "texCoord");
 
   // Set up texture
   GLuint texture;
@@ -136,7 +95,7 @@ int main(int, char**) {
   glClear(GL_COLOR_BUFFER_BIT);
 
 #if 1
-  glUseProgram(program);
+  glUseProgram(*program);
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
@@ -152,9 +111,6 @@ int main(int, char**) {
 
   // Cleanup
   glDeleteBuffers(1, &vertexBuffer);
-  glDeleteProgram(program);
-  glDeleteShader(fragmentShader);
-  glDeleteShader(vertexShader);
 
   return 0; 
 }
