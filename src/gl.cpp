@@ -1,5 +1,13 @@
 #include "gl.hpp"
 
+#include <cstdio>
+
+namespace {
+  void errorCallback(GLenum, GLenum type, GLuint, GLenum severity, GLsizei, const GLchar* message, const void*) {
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n", ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ), type, severity, message);
+  }
+}
+
 glGenBuffersProc* glGenBuffers = nullptr;
 glDeleteBuffersProc* glDeleteBuffers = nullptr;
 glBindBufferProc* glBindBuffer = nullptr;
@@ -60,11 +68,11 @@ void squint::loadGL(GetProcAddressFuncT* getProcAddress) {
   // Set up error callback in debug build
   // TODO: Check if GL version supports it! This function is from OpenGL 4+
   // TODO: Move this to gl_context
-#if 0
+#ifndef NDEBUG
   using glDebugMessageCallbackProc = void(GLDEBUGPROC, void*);
   glDebugMessageCallbackProc* glDebugMessageCallback =
     (glDebugMessageCallbackProc*)getProcAddress("glDebugMessageCallback");
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(openglErrorCallback, 0);
+  glDebugMessageCallback(errorCallback, 0);
 #endif
 }
