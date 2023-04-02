@@ -27,6 +27,19 @@ int main(int, char**) {
   const auto output = squint::x11::takeScreenshot(display);
   const auto glContext = squint::x11::initializeGLContext(display);
 
+  /*
+   * FX PIPELINE EXPERIMENT
+   */
+#if 0
+  auto resultImage = squint::fx::Pipeline::fromScreenshot(output)
+                     | squint::fx::Pixelate{30}
+                     | squint::fx::GaussianBlur
+                     | squint::fx::DownloadImage;
+#endif
+
+  /*
+   * FAST PIXELATE EXPERIMENT
+   */
   // Set up framebuffer
   std::cout << output->width << " " << output->height << std::endl;
   auto colorRenderbuffer = squint::gl::genRenderbuffer(GL_RGBA8, output->width, output->height);
