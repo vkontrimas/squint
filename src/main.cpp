@@ -48,33 +48,38 @@ int main(int, char**) {
   /*
    * X11 screenshot experiment
    */
-  Window rootWindow = XDefaultRootWindow(display.get());
-  assert(rootWindow);
 
-  XWindowAttributes rootAttribs;
-  XGetWindowAttributes(display.get(), rootWindow, &rootAttribs);
-  XRenderPictFormat* sourceFormat = XRenderFindVisualFormat(display.get(), rootAttribs.visual);
-  XRenderPictureAttributes sourceAttribs;
-  sourceAttribs.subwindow_mode = IncludeInferiors; // Not entirely sure what this does
+  const auto takeScreenshot = [&display]() {
+    Window rootWindow = XDefaultRootWindow(display.get());
+    assert(rootWindow);
 
-  Picture source = XRenderCreatePicture(display.get(), rootWindow, sourceFormat, CPSubwindowMode, &sourceAttribs);
-  assert(source);
+    XWindowAttributes rootAttribs;
+    XGetWindowAttributes(display.get(), rootWindow, &rootAttribs);
+    XRenderPictFormat* sourceFormat = XRenderFindVisualFormat(display.get(), rootAttribs.visual);
+    XRenderPictureAttributes sourceAttribs;
+    sourceAttribs.subwindow_mode = IncludeInferiors; // Not entirely sure what this does
 
-  Pixmap pixmap = XCreatePixmap(display.get(), rootWindow, rootAttribs.width, rootAttribs.height, 32);
-  assert(pixmap);
+    Picture source = XRenderCreatePicture(display.get(), rootWindow, sourceFormat, CPSubwindowMode, &sourceAttribs);
+    assert(source);
 
-  // TODO: check if destinationFormat matches what i3 expects
-  XRenderPictFormat* destinationFormat = XRenderFindStandardFormat(display.get(), PictStandardARGB32);
-  XRenderPictureAttributes destinationAttribs;
-  Picture destination = XRenderCreatePicture(display.get(), pixmap, destinationFormat, 0, &destinationAttribs);
-  assert(destination);
+    Pixmap pixmap = XCreatePixmap(display.get(), rootWindow, rootAttribs.width, rootAttribs.height, 32);
+    assert(pixmap);
 
-  XRenderColor black { 0x0000, 0x0000, 0x0000, 0x0000 };
-  XRenderFillRectangle(display.get(), PictOpSrc, destination, &black, 0, 0, rootAttribs.width, rootAttribs.height);
-  XRenderComposite(display.get(), PictOpSrc, source, 0, destination, 0, 0, 0, 0, 0, 0, rootAttribs.width, rootAttribs.height);
+    // TODO: check if destinationFormat matches what i3 expects
+    XRenderPictFormat* destinationFormat = XRenderFindStandardFormat(display.get(), PictStandardARGB32);
+    XRenderPictureAttributes destinationAttribs;
+    Picture destination = XRenderCreatePicture(display.get(), pixmap, destinationFormat, 0, &destinationAttribs);
+    assert(destination);
 
-  XImage* output = XGetImage(display.get(), pixmap, 0, 0, rootAttribs.width, rootAttribs.height, AllPlanes, ZPixmap);
-  assert(output);
+    XRenderColor black { 0x0000, 0x0000, 0x0000, 0x0000 };
+    XRenderFillRectangle(display.get(), PictOpSrc, destination, &black, 0, 0, rootAttribs.width, rootAttribs.height);
+    XRenderComposite(display.get(), PictOpSrc, source, 0, destination, 0, 0, 0, 0, 0, 0, rootAttribs.width, rootAttribs.height);
+
+    XImage* output = XGetImage(display.get(), pixmap, 0, 0, rootAttribs.width, rootAttribs.height, AllPlanes, ZPixmap);
+    assert(output);
+    return output;
+  };
+  const auto output = takeScreenshot();
 
   /*
    * OPENGL CONTEXT EXPERIMENT
