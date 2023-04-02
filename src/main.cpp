@@ -3,6 +3,7 @@
 #include "gl/renderbuffer.hpp"
 #include "gl/framebuffer.hpp"
 #include "gl/texture.hpp"
+#include "gl/buffer.hpp"
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
@@ -74,9 +75,8 @@ int main(int, char**) {
     -1.0f,  1.0f,  0.0f,  1.0f
   };
 
-  GLuint vertexBuffer;
-  glGenBuffers(1, &vertexBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  auto vertexBuffer = squint::gl::genBuffer();
+  glBindBuffer(GL_ARRAY_BUFFER, *vertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(vertexLocation);
@@ -103,9 +103,6 @@ int main(int, char**) {
     std::fstream file {"test.raw", std::ios::binary | std::ios::out};
     file.write(buffer.data(), buffer.size());
   }
-
-  // Cleanup
-  glDeleteBuffers(1, &vertexBuffer);
 
   return 0; 
 }
