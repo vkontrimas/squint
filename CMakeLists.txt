@@ -43,6 +43,8 @@ add_executable(
   src/x11/display.cpp
   src/x11/xhandle.hpp
   src/x11/xhandle.cpp
+  src/x11/screenshot.hpp
+  src/x11/screenshot.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 
