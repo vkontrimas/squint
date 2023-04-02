@@ -5,13 +5,15 @@
 #include <cassert>
 
 namespace squint::gl {
-  struct BufferDeleter {
-    void operator()(GLuint buffer) {
-      glDeleteBuffers(1, &buffer);
-    }
-  };
+  namespace detail {
+    struct BufferDeleter {
+      void operator()(GLuint buffer) {
+        glDeleteBuffers(1, &buffer);
+      }
+    };
+  }
 
-  using Buffer = BasicHandle<GLuint, BufferDeleter>;
+  using Buffer = BasicHandle<GLuint, detail::BufferDeleter>;
 
   Buffer genBuffer() {
     GLuint buffer;

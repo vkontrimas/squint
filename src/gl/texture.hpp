@@ -5,13 +5,14 @@
 #include <cassert>
 
 namespace squint::gl {
-  struct TextureDeleter {
-    void operator()(GLuint texture) {
-      glDeleteTextures(1, &texture);
-    }
-  };
-
-  using Texture = BasicHandle<GLuint, TextureDeleter>;
+  namespace detail {
+    struct TextureDeleter {
+      void operator()(GLuint texture) {
+        glDeleteTextures(1, &texture);
+      }
+    };
+  }
+  using Texture = BasicHandle<GLuint, detail::TextureDeleter>;
 
   Texture genTexture() {
     GLuint texture;

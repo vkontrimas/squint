@@ -5,12 +5,14 @@
 #include <cassert>
 
 namespace squint::gl {
-  struct RenderbufferDeleter {
-    void operator()(GLuint renderbuffer) {
-      glDeleteRenderbuffers(1, &renderbuffer);
-    }
-  };
-  using Renderbuffer = BasicHandle<GLuint, RenderbufferDeleter>;
+  namespace detail {
+    struct RenderbufferDeleter {
+      void operator()(GLuint renderbuffer) {
+        glDeleteRenderbuffers(1, &renderbuffer);
+      }
+    };
+  }
+  using Renderbuffer = BasicHandle<GLuint, detail::RenderbufferDeleter>;
 
   Renderbuffer genRenderbuffer() {
     GLuint renderbuffer;
