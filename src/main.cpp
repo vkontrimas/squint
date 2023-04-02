@@ -19,7 +19,7 @@
 #include <vector>
 
 #include <squint/glsl/test.frag.h>
-#include <squint/glsl/test.vert.h>
+#include <squint/glsl/quad.vert.h>
 
 int main(int, char**) { 
   // 🤢 this is ugly code, pls ignore
@@ -40,7 +40,7 @@ int main(int, char**) {
 
   // Set up shader
   auto program = squint::gl::compileProgram(
-    squint_glsl_test_vert, squint_glsl_test_frag
+    squint_glsl_quad_vert, squint_glsl_test_frag
   );
 
   const GLuint vertexLocation = 0;
