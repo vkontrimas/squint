@@ -35,7 +35,7 @@ int main(int, char**) {
    * X11 screenshot experiment
    */
 
-  const auto takeScreenshot = [&display]() {
+  const auto takeScreenshot = [](const squint::x11::DisplayHandle& display) {
     Window rootWindow = XDefaultRootWindow(display.get());
     assert(rootWindow);
 
@@ -65,7 +65,7 @@ int main(int, char**) {
     assert(output);
     return output;
   };
-  const auto output = takeScreenshot();
+  const auto output = takeScreenshot(display);
 
   /*
    * OPENGL CONTEXT EXPERIMENT
