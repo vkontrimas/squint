@@ -37,8 +37,8 @@ endforeach()
 add_executable(
   squint
   src/main.cpp
-  src/gl.hpp
-  src/gl.cpp
+  src/gl/gl.hpp
+  src/gl/gl.cpp
   src/x11/display.hpp
   src/x11/display.cpp
   src/x11/xhandle.hpp

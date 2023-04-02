@@ -1,4 +1,4 @@
-#include "gl.hpp"
+#include "gl/gl.hpp"
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"

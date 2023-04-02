@@ -83,7 +83,7 @@ extern glFramebufferRenderbufferProc* glFramebufferRenderbuffer;
 using glCheckFramebufferStatusProc = GLenum(GLenum);
 extern glCheckFramebufferStatusProc* glCheckFramebufferStatus;
 
-namespace squint {
+namespace squint::gl {
   using GetProcAddressFuncT = void* (const char*);
   void loadGL(GetProcAddressFuncT* getProcAddress);
 }

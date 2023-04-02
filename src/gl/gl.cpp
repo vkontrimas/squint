@@ -36,7 +36,7 @@ glBindFramebufferProc* glBindFramebuffer = nullptr;
 glFramebufferRenderbufferProc* glFramebufferRenderbuffer = nullptr;
 glCheckFramebufferStatusProc* glCheckFramebufferStatus = nullptr;
 
-void squint::loadGL(GetProcAddressFuncT* getProcAddress) {
+void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
   glGenBuffers = (glGenBuffersProc*)getProcAddress("glGenBuffers");
   glDeleteBuffers = (glDeleteBuffersProc*)getProcAddress("glDeleteBuffers");
   glBindBuffer = (glBindBufferProc*)getProcAddress("glBindBuffer");

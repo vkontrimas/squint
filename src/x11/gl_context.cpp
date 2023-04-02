@@ -1,6 +1,6 @@
 #include "gl_context.hpp"
 
-#include "../gl.hpp"
+#include "../gl/gl.hpp"
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>
@@ -124,7 +124,7 @@ namespace squint::x11 {
     glXMakeCurrent(display.get(), window, glContext);
 
     // Load the rest of GL
-    squint::loadGL((squint::GetProcAddressFuncT*)glXGetProcAddressARB);
+    squint::gl::loadGL((squint::gl::GetProcAddressFuncT*)glXGetProcAddressARB);
 
     return {
       display.get(),
