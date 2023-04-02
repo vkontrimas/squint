@@ -8,13 +8,13 @@ namespace squint::x11 {
     XCloseDisplay(display);
   }
 
-  DisplayPtr openDisplay() {
+  DisplayHandle openDisplay() {
     const char* displayId = getenv("DISPLAY");
     if (!displayId) {
       displayId = ":0";
     }
 
-    DisplayPtr display{XOpenDisplay(displayId)};
+    DisplayHandle display{XOpenDisplay(displayId)};
     assert(display);
     return display;
   }
