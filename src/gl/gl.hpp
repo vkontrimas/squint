@@ -68,6 +68,9 @@ extern glGetProgramInfoLogProc* glGetProgramInfoLog;
 using glGenRenderbuffersProc = void(GLsizei, GLuint*);
 extern glGenRenderbuffersProc* glGenRenderbuffers;
 
+using glDeleteRenderbuffersProc = void(GLsizei, GLuint*);
+extern glDeleteRenderbuffersProc* glDeleteRenderbuffers;
+
 using glBindRenderbufferProc = void(GLenum, GLuint);
 extern glBindRenderbufferProc* glBindRenderbuffer;
 
@@ -76,6 +79,9 @@ extern glRenderbufferStorageProc* glRenderbufferStorage;
 
 using glGenFramebuffersProc = void(GLsizei, GLuint*);
 extern glGenFramebuffersProc* glGenFramebuffers;
+
+using glDeleteFramebuffersProc = void(GLsizei, GLuint*);
+extern glDeleteFramebuffersProc* glDeleteFramebuffers;
 
 using glBindFramebufferProc = void(GLenum, GLuint);
 extern glBindFramebufferProc* glBindFramebuffer;
