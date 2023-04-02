@@ -40,6 +40,8 @@ int main(int, char**) {
                      | squint::fx::GaussianBlur
                      | squint::fx::ToImage;
 
+  std::cout << "RESULT: " << resultImage << std::endl;
+
   /*
    * FAST PIXELATE EXPERIMENT
    */
