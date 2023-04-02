@@ -4,8 +4,10 @@
 #include <cassert>
 
 namespace squint::x11 {
-  void DisplayDeleter::operator()(Display* display) {
-    XCloseDisplay(display);
+  namespace detail {
+    void DisplayDeleter::operator()(Display* display) {
+      XCloseDisplay(display);
+    }
   }
 
   DisplayHandle openDisplay() {
