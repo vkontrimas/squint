@@ -20,6 +20,7 @@ glGetShaderivProc* glGetShaderiv = nullptr;
 glCreateProgramProc* glCreateProgram = nullptr;
 glDeleteProgramProc* glDeleteProgram = nullptr;
 glAttachShaderProc* glAttachShader = nullptr;
+glDetachShaderProc* glDetachShader = nullptr;
 glLinkProgramProc* glLinkProgram = nullptr;
 glUseProgramProc* glUseProgram = nullptr;
 glGetProgramivProc* glGetProgramiv = nullptr;
@@ -49,6 +50,7 @@ void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
   glCreateProgram = (glCreateProgramProc*)getProcAddress("glCreateProgram");
   glDeleteProgram = (glDeleteProgramProc*)getProcAddress("glDeleteProgram");
   glAttachShader = (glAttachShaderProc*)getProcAddress("glAttachShader");
+  glDetachShader = (glDetachShaderProc*)getProcAddress("glDetachShader");
   glLinkProgram = (glLinkProgramProc*)getProcAddress("glLinkProgram");
   glUseProgram = (glUseProgramProc*)getProcAddress("glUseProgram");
   glGetProgramiv = (glGetProgramivProc*)getProcAddress("glGetProgramiv");

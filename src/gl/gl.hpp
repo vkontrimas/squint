@@ -38,6 +38,9 @@ extern glDeleteProgramProc* glDeleteProgram;
 using glAttachShaderProc = void(GLuint, GLuint);
 extern glAttachShaderProc* glAttachShader;
 
+using glDetachShaderProc = void(GLuint, GLuint);
+extern glDetachShaderProc* glDetachShader;
+
 using glLinkProgramProc = void(GLuint);
 extern glLinkProgramProc* glLinkProgram;
 
