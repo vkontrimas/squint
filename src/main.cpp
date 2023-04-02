@@ -1,3 +1,6 @@
+#include "gl.hpp"
+#include "x11/display.hpp"
+
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -9,8 +12,6 @@
 #include <unistd.h> // for sleep() only
 #include <vector>
 
-#include "gl.hpp"
-
 #include <squint/glsl/test.frag.h>
 #include <squint/glsl/test.vert.h>
 
@@ -20,13 +21,6 @@ namespace {
   }
 }
 
-struct DisplayDeleter {
-  void operator()(Display* display) {
-    XCloseDisplay(display);
-  }
-};
-using DisplayPtr = std::unique_ptr<Display, DisplayDeleter>;
-
 static bool contextCreationError = false;
 int customXErrorHandlerForGLInit(Display*, XErrorEvent*) {
   contextCreationError = true;
@@ -35,17 +29,7 @@ int customXErrorHandlerForGLInit(Display*, XErrorEvent*) {
 
 int main(int, char**) { 
   // 🤢 this is ugly code, pls ignore
-  const auto openDisplay = []() {
-    const char* displayId = getenv("DISPLAY");
-    if (!displayId) {
-      displayId = ":0";
-    }
-
-    DisplayPtr display{XOpenDisplay(displayId)};
-    assert(display);
-    return display;
-  };
-  const auto display = openDisplay();
+  const auto display = squint::x11::openDisplay();
 
   /*
    * X11 screenshot experiment

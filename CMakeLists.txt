@@ -39,6 +39,8 @@ add_executable(
   src/main.cpp
   src/gl.hpp
   src/gl.cpp
+  src/x11/display.hpp
+  src/x11/display.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 
