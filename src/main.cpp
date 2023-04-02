@@ -1,5 +1,7 @@
 #include "gl/gl.hpp"
 #include "gl/shader.hpp"
+#include "gl/renderbuffer.hpp"
+#include "gl/framebuffer.hpp"
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
@@ -25,18 +27,14 @@ int main(int, char**) {
 
   // Set up framebuffer
   std::cout << output->width << " " << output->height << std::endl;
-  GLuint colorRenderbuffer;
-  glGenRenderbuffers(1, &colorRenderbuffer);
-  assert(colorRenderbuffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
+  auto colorRenderbuffer = squint::gl::genRenderbuffer();
+  glBindRenderbuffer(GL_RENDERBUFFER, *colorRenderbuffer);
   glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, output->width, output->height);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-  GLuint framebuffer;
-  glGenFramebuffers(1, &framebuffer);
-  assert(framebuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
+  auto framebuffer = squint::gl::genFramebuffer();
+  glBindFramebuffer(GL_FRAMEBUFFER, *framebuffer);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, *colorRenderbuffer);
   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
   glViewport(0, 0, output->width, output->height);

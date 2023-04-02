@@ -42,6 +42,8 @@ add_executable(
   src/gl/gl.cpp
   src/gl/shader.hpp
   src/gl/shader.cpp
+  src/gl/renderbuffer.hpp
+  src/gl/framebuffer.hpp
   src/x11/display.hpp
   src/x11/display.cpp
   src/x11/xhandle.hpp
