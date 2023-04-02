@@ -27,6 +27,7 @@ glGetProgramivProc* glGetProgramiv = nullptr;
 glGetUniformLocationProc* glGetUniformLocation = nullptr;
 glUniform1fProc* glUniform1f = nullptr;
 glBindAttribLocationProc* glBindAttribLocation = nullptr;
+glGetAttribLocationProc* glGetAttribLocation = nullptr;
 glEnableVertexAttribArrayProc* glEnableVertexAttribArray = nullptr;
 glVertexAttribPointerProc* glVertexAttribPointer = nullptr;
 glGetShaderInfoLogProc* glGetShaderInfoLog = nullptr;
@@ -61,6 +62,7 @@ void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
   glGetUniformLocation = (glGetUniformLocationProc*)getProcAddress("glGetUniformLocation");
   glUniform1f = (glUniform1fProc*)getProcAddress("glUniform1f");
   glBindAttribLocation = (glBindAttribLocationProc*)getProcAddress("glBindAttribLocation");
+  glGetAttribLocation = (glGetAttribLocationProc*)getProcAddress("glGetAttribLocation");
   glEnableVertexAttribArray = (glEnableVertexAttribArrayProc*)getProcAddress("glEnableVertexAttribArray");
   glVertexAttribPointer = (glVertexAttribPointerProc*)getProcAddress("glVertexAttribPointer");
   glGetShaderInfoLog = (glGetShaderInfoLogProc*)getProcAddress("glGetShaderInfoLog");

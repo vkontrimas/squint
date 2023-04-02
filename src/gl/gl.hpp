@@ -59,6 +59,9 @@ extern glUniform1fProc* glUniform1f;
 using glBindAttribLocationProc = void(GLuint, GLuint, const GLchar*);
 extern glBindAttribLocationProc* glBindAttribLocation;
 
+using glGetAttribLocationProc = GLint(GLuint, const GLchar*);
+extern glGetAttribLocationProc* glGetAttribLocation;
+
 using glEnableVertexAttribArrayProc = void(GLuint);
 extern glEnableVertexAttribArrayProc* glEnableVertexAttribArray;
 
