@@ -5,7 +5,6 @@
 #include <fstream>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrender.h>
-#include <GL/gl.h>
 #include <GL/glx.h>
 #include <unistd.h> // for sleep() only
 #include <vector>
@@ -188,27 +187,27 @@ int main(int, char**) {
   glXMakeCurrent(display.get(), window, glContext);
 
   // Load the rest of GL
-  auto gl = squint::Gl::load((squint::Gl::GetProcAddressFuncT*)glXGetProcAddressARB);
+  squint::loadGL((squint::GetProcAddressFuncT*)glXGetProcAddressARB);
 
   // Set up error callback
-  gl.glEnable(GL_DEBUG_OUTPUT);
-  gl.glDebugMessageCallback(openglErrorCallback, 0);
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(openglErrorCallback, 0);
 
   // Set up framebuffer
   std::cout << output->width << " " << output->height << std::endl;
   GLuint colorRenderbuffer;
-  gl.glGenRenderbuffers(1, &colorRenderbuffer);
+  glGenRenderbuffers(1, &colorRenderbuffer);
   assert(colorRenderbuffer);
-  gl.glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-  gl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, output->width, output->height);
-  gl.glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, output->width, output->height);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   GLuint framebuffer;
-  gl.glGenFramebuffers(1, &framebuffer);
+  glGenFramebuffers(1, &framebuffer);
   assert(framebuffer);
-  gl.glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  gl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
-  assert(gl.glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
+  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
   glViewport(0, 0, output->width, output->height); // TODO: Move to Gl
 
@@ -216,19 +215,19 @@ int main(int, char**) {
   const auto compileShader = [=](GLenum shaderType, const char* source) {
     assert(source);
 
-    GLuint shader = gl.glCreateShader(shaderType);
+    GLuint shader = glCreateShader(shaderType);
     assert(shader);
 
-    gl.glShaderSource(shader, 1, &source, nullptr);
-    gl.glCompileShader(shader);
+    glShaderSource(shader, 1, &source, nullptr);
+    glCompileShader(shader);
 
     GLint compileSuccess;
-    gl.glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
 
     if (!compileSuccess) {
       constexpr GLsizei kLogLength = 1024;
       char log[kLogLength];
-      gl.glGetShaderInfoLog(shader, kLogLength, nullptr, log);
+      glGetShaderInfoLog(shader, kLogLength, nullptr, log);
       std::cout << log << std::endl;
       std::abort();
     }
@@ -237,15 +236,15 @@ int main(int, char**) {
   };
 
   const auto linkProgram = [=](GLuint program) {
-    gl.glLinkProgram(program);
+    glLinkProgram(program);
 
     GLint linkSuccess;
-    gl.glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
+    glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
 
     if (!linkSuccess) {
       constexpr GLsizei kLogLength = 1024;
       char log[kLogLength];
-      gl.glGetProgramInfoLog(program, kLogLength, nullptr, log);
+      glGetProgramInfoLog(program, kLogLength, nullptr, log);
       std::cout << log << std::endl;
       std::abort();
     }
@@ -254,25 +253,25 @@ int main(int, char**) {
   GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, squint_glsl_test_frag);
   GLuint vertexShader = compileShader(GL_VERTEX_SHADER, squint_glsl_test_vert);
 
-  GLuint program = gl.glCreateProgram();
-  gl.glAttachShader(program, vertexShader);
-  gl.glAttachShader(program, fragmentShader);
+  GLuint program = glCreateProgram();
+  glAttachShader(program, vertexShader);
+  glAttachShader(program, fragmentShader);
   linkProgram(program);
 
   const GLuint vertexLocation = 0;
-  gl.glBindAttribLocation(program, vertexLocation, "position");
+  glBindAttribLocation(program, vertexLocation, "position");
 
   const GLuint uvLocation = 1;
-  gl.glBindAttribLocation(program, uvLocation, "texCoord");
+  glBindAttribLocation(program, uvLocation, "texCoord");
 
   // Set up texture
   GLuint texture;
-  gl.glGenTextures(1, &texture);
-  gl.glBindTexture(GL_TEXTURE_2D, texture);
-  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   glTexImage2D(
     GL_TEXTURE_2D, 0,
@@ -293,25 +292,25 @@ int main(int, char**) {
   };
 
   GLuint vertexBuffer;
-  gl.glGenBuffers(1, &vertexBuffer);
-  gl.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  gl.glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glGenBuffers(1, &vertexBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  gl.glEnableVertexAttribArray(vertexLocation);
-  gl.glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 0));
+  glEnableVertexAttribArray(vertexLocation);
+  glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 0));
 
-  gl.glEnableVertexAttribArray(uvLocation);
-  gl.glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 2));
+  glEnableVertexAttribArray(uvLocation);
+  glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, sizeof(GLfloat) * 4, (GLvoid*)(sizeof(GLfloat) * 2));
 
   // Try drawing?
   glClearColor(1.0, 0.0, 1.0, 1.0); // TODO: Move to Gl
   glClear(GL_COLOR_BUFFER_BIT); // TODO: Move to Gl
 
 #if 1
-  gl.glUseProgram(program);
+  glUseProgram(program);
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // TODO: Move to Gl
-  gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
-  gl.glUseProgram(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glUseProgram(0);
 #endif
 
   // Write image to file
@@ -323,10 +322,10 @@ int main(int, char**) {
   }
 
   // Cleanup
-  gl.glDeleteBuffers(1, &vertexBuffer);
-  gl.glDeleteProgram(program);
-  gl.glDeleteShader(fragmentShader);
-  gl.glDeleteShader(vertexShader);
+  glDeleteBuffers(1, &vertexBuffer);
+  glDeleteProgram(program);
+  glDeleteShader(fragmentShader);
+  glDeleteShader(vertexShader);
 
   glXMakeCurrent(display.get(), 0, nullptr);
   glXDestroyContext(display.get(), glContext);

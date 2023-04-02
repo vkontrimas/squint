@@ -37,6 +37,8 @@ endforeach()
 add_executable(
   squint
   src/main.cpp
+  src/gl.hpp
+  src/gl.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 
