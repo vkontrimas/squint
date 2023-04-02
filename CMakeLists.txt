@@ -41,6 +41,8 @@ add_executable(
   src/gl.cpp
   src/x11/display.hpp
   src/x11/display.cpp
+  src/x11/xhandle.hpp
+  src/x11/xhandle.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 
