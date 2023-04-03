@@ -14,7 +14,7 @@ namespace squint::gl {
   }
   using Framebuffer = BasicHandle<GLuint, detail::FramebufferDeleter>;
 
-  Framebuffer genFramebuffer() {
+  inline Framebuffer genFramebuffer() {
     GLuint framebuffer;
     glGenFramebuffers(1, &framebuffer);
     assert(framebuffer);

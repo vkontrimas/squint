@@ -14,7 +14,7 @@ namespace squint::gl {
   }
   using Texture = BasicHandle<GLuint, detail::TextureDeleter>;
 
-  Texture genTexture() {
+  inline Texture genTexture() {
     GLuint texture;
     glGenTextures(1, &texture);
     assert(texture);
