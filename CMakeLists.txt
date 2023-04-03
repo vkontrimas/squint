@@ -11,6 +11,8 @@ set(
   SHADERS
   glsl/fast_pixelate.frag
   glsl/quad.vert
+  glsl/upscale.frag
+  glsl/average.frag
 )
 
 foreach(SHADER ${SHADERS})
