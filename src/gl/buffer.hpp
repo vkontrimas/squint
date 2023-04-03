@@ -15,7 +15,7 @@ namespace squint::gl {
 
   using Buffer = BasicHandle<GLuint, detail::BufferDeleter>;
 
-  Buffer genBuffer() {
+  inline Buffer genBuffer() {
     GLuint buffer;
     glGenBuffers(1, &buffer);
     assert(buffer);
