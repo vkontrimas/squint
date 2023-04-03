@@ -17,13 +17,11 @@ with X11 and OpenGL.
 - ~~Pixelate~~
 - Blur
 - Dynamic configuration    
-  (Currently I'm hardcoding things as I develop.)
+  *Currently I'm hardcoding things as I develop.*
 - More filters! ✨
 - Multiple displays! 🖥🖥🖥    
   *Currently running a single display so multi-display set ups will need
   testing.*
-- `i3lock` replacement with live blurring 🚀    
-  *Neat if a bit wasteful.*
 - Wayland??? 💻    
   *I don't currently use it (NVidia 🤷️) but perhaps I'll switch to `sway` on my
   laptop.*
