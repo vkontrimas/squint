@@ -1,4 +1,5 @@
 build/
+release/
 test.raw
 test2.raw
 test.png
