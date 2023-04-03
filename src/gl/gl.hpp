@@ -56,6 +56,9 @@ extern glGetUniformLocationProc* glGetUniformLocation;
 using glUniform1fProc = void (GLint location, GLfloat v0);
 extern glUniform1fProc* glUniform1f; 
 
+using glUniform1iProc = void (GLint location, GLint v0);
+extern glUniform1iProc* glUniform1i; 
+
 using glBindAttribLocationProc = void(GLuint, GLuint, const GLchar*);
 extern glBindAttribLocationProc* glBindAttribLocation;
 
