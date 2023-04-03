@@ -5,6 +5,9 @@ A GPU accelerated program to pixelate or blur your screen, primarily for use
 with `i3lock`. Currently only supports X11, but maybe some day I'll look into
 Wayland too.
 
+### Screenshots
+![pixelated desktop screenshot](assets/pixelated.jpg)
+
 ### Storytime
 Wrote this because I got fed up with the tiny 3s delay of my `maim + imagemagick`
 solution on my 4k screen. Rather than looking for existing solutions, I decided
