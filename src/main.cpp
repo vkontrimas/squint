@@ -40,13 +40,10 @@ int main(int, char**) {
   }
   | squint::fx::SetImage{output->width, output->height, output->data}
   | squint::fx::FastPixelate{24, &fullscreenQuad}
-  | squint::fx::PeekImage{outputBuffer.data()}
-  ;
+  | squint::fx::PeekImage{outputBuffer.data()};
 
-  {
-    std::fstream file {"test.raw", std::ios::binary | std::ios::out};
-    file.write(outputBuffer.data(), outputBuffer.size());
-  }
+  std::fstream file {"test.raw", std::ios::binary | std::ios::out};
+  file.write(outputBuffer.data(), outputBuffer.size());
 
   return 0; 
 }
