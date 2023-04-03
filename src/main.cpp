@@ -8,6 +8,7 @@
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
 #include "fx/pipeline.hpp"
+#include "fx/set_image.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -31,8 +32,8 @@ int main(int, char**) {
   /*
    * FX PIPELINE EXPERIMENT
    */
-  auto resultImage = squint::fx::Pipeline(output->width, output->height);
-                     //| squint::fx::Pixelate{30};
+  squint::fx::Pipeline{output->width, output->height}
+  | squint::fx::SetImage{output->width, output->height, output->data};
 
   /*
    * FAST PIXELATE EXPERIMENT
