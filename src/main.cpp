@@ -9,6 +9,7 @@
 #include "x11/gl_context.hpp"
 #include "fx/pipeline.hpp"
 #include "fx/set_image.hpp"
+#include "fx/peek_image.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -32,9 +33,21 @@ int main(int, char**) {
   /*
    * FX PIPELINE EXPERIMENT
    */
-  squint::fx::Pipeline{output->width, output->height}
-  | squint::fx::SetImage{output->width, output->height, output->data};
+  std::vector<char> outputBuffer(output->width * output->height * 4, 0);
 
+  squint::fx::Pipeline{output->width, output->height}
+  | [](const squint::fx::StageContext&) {
+    glClearColor(1.0, 0.0, 0.5, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
+  | squint::fx::SetImage{output->width, output->height, output->data}
+  | squint::fx::PeekImage{outputBuffer.data()};
+
+  // Write image
+  {
+    std::fstream file {"test.raw", std::ios::binary | std::ios::out};
+    file.write(outputBuffer.data(), outputBuffer.size());
+  }
   /*
    * FAST PIXELATE EXPERIMENT
    */
@@ -119,14 +132,6 @@ int main(int, char**) {
   glUseProgram(0);
 #endif
 #endif
-
-  // Write image to file
-  std::vector<char> buffer(output->width * output->height * 4, 0);
-  // glReadPixels(0, 0, output->width, output->height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
-  {
-    std::fstream file {"test.raw", std::ios::binary | std::ios::out};
-    file.write(buffer.data(), buffer.size());
-  }
 
   return 0; 
 }
