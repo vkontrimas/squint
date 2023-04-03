@@ -1,9 +1,4 @@
 #include "gl/gl.hpp"
-#include "gl/program.hpp"
-#include "gl/renderbuffer.hpp"
-#include "gl/framebuffer.hpp"
-#include "gl/texture.hpp"
-#include "gl/buffer.hpp"
 #include "x11/display.hpp"
 #include "x11/screenshot.hpp"
 #include "x11/gl_context.hpp"
@@ -13,18 +8,12 @@
 #include "fx/fullscreen_quad.hpp"
 #include "fx/fast_pixelate.hpp"
 
-#include <cassert>
-#include <cstdlib>
-#include <iostream>
-#include <memory>
+#include <X11/Xlib.h> // we depend on XImage rn...
+
 #include <fstream>
-#include <X11/Xlib.h>
-#include <X11/extensions/Xrender.h>
-#include <unistd.h> // for sleep() only
 #include <vector>
 
 int main(int, char**) { 
-  // 🤢 this is ugly code, pls ignore
   const auto display = squint::x11::openDisplay();
   const auto output = squint::x11::takeScreenshot(display);
   const auto glContext = squint::x11::initializeGLContext(display);
