@@ -9,10 +9,9 @@ Wayland too.
 ![pixelated desktop screenshot](assets/pixelated.jpg)
 
 ### Storytime
-Wrote this because I got fed up with the tiny 3s delay of my `maim + imagemagick`
-solution on my 4k screen. Rather than looking for existing solutions, I decided
-to play around with X11 and OpenGL. For this reason, I am calling directly into
-XLib and loading GL functions myself.
+Got fed up with the tiny 3s delay of my `maim + imagemagick` solution on a 4k
+screen. Rather than looking for existing solutions, I decided to play around
+with X11 and OpenGL. 
 
 # To do
 - ~~Pixelate~~
@@ -23,7 +22,8 @@ XLib and loading GL functions myself.
 - `i3lock` replacement with live blurring 🚀    
   *Neat if a bit wasteful.*
 - Wayland??? 💻    
-  *I don't currently use it (NVidia 🤷️) but perhaps I'll switch to `sway` on my laptop.*
+  *I don't currently use it (NVidia 🤷️) but perhaps I'll switch to `sway` on my
+  laptop.*
 
 # Usage
 TO DO: once we can blur the pixels too.
