@@ -60,6 +60,8 @@ add_executable(
   src/fx/set_image.hpp
   src/fx/peek_image.hpp
   src/fx/fullscreen_quad.hpp
+  src/fx/fast_pixelate.hpp
+  src/fx/fast_pixelate.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 

@@ -2,6 +2,8 @@
 
 #include "../gl/buffer.hpp"
 
+#include <iostream>
+
 namespace squint::fx {
   class FullscreenQuad {
   public:
