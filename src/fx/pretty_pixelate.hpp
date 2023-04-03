@@ -29,6 +29,9 @@ namespace squint::fx {
     };
 
     Shader average_;
+    GLuint averageRadiusLocation_;
     Shader upscale_;
+
+    int downscaledWidth_, downscaledHeight_;
   };
 }
