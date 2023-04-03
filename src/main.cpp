@@ -38,6 +38,7 @@ int main(int, char**) {
    * FAST PIXELATE EXPERIMENT
    */
   // Set up framebuffer
+#if 0
   std::cout << output->width << " " << output->height << std::endl;
   auto colorRenderbuffer = squint::gl::genRenderbuffer(GL_RGBA8, output->width, output->height);
 
@@ -116,10 +117,11 @@ int main(int, char**) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glUseProgram(0);
 #endif
+#endif
 
   // Write image to file
   std::vector<char> buffer(output->width * output->height * 4, 0);
-  glReadPixels(0, 0, output->width, output->height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+  // glReadPixels(0, 0, output->width, output->height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
   {
     std::fstream file {"test.raw", std::ios::binary | std::ios::out};
     file.write(buffer.data(), buffer.size());
