@@ -4,6 +4,7 @@
 
 namespace squint::fx {
   struct StageContext {
-    GLuint previousTexture;
+    GLuint frontTexture;
+    GLuint backTexture;
   };
 }
