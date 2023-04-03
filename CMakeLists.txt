@@ -66,6 +66,8 @@ add_executable(
   src/fx/fullscreen_quad.hpp
   src/fx/fast_pixelate.hpp
   src/fx/fast_pixelate.cpp
+  src/fx/pretty_pixelate.hpp
+  src/fx/pretty_pixelate.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 
