@@ -5,9 +5,9 @@
 #include "../gl/gl.hpp"
 #include "../gl/framebuffer.hpp"
 #include "../gl/texture.hpp"
+#include "stage_context.hpp"
 
 namespace squint::fx {
-  struct StageContext;
 
   /*
    * Intermediate stages must have the following signature:
@@ -28,10 +28,6 @@ namespace squint::fx {
   template<typename Func>
   concept TerminatorStage = std::is_invocable_v<Func, const StageContext&> &&
                             !std::is_same_v<std::invoke_result_t<Func, const StageContext&>, void>;
-
-  struct StageContext {
-    GLuint previousTexture;
-  };
 
   class Pipeline final {
   public:
