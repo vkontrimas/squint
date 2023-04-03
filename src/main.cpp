@@ -31,16 +31,8 @@ int main(int, char**) {
   /*
    * FX PIPELINE EXPERIMENT
    */
-  auto resultImage = squint::fx::Pipeline::fromScreenshot(output)
-                     | squint::fx::Pixelate{30}
-                     | squint::fx::Pixelate{30}
-                     | squint::fx::GaussianBlur
-                     | squint::fx::GaussianBlur
-                     | squint::fx::GaussianBlur
-                     | squint::fx::GaussianBlur
-                     | squint::fx::ToImage;
-
-  std::cout << "RESULT: " << resultImage << std::endl;
+  auto resultImage = squint::fx::Pipeline(output->width, output->height);
+                     //| squint::fx::Pixelate{30};
 
   /*
    * FAST PIXELATE EXPERIMENT

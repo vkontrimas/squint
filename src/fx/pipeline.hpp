@@ -1,78 +1,61 @@
 #pragma once
 
-#include <utility>
-#include <iostream>
 #include <concepts>
 #include <type_traits>
+#include "../gl/gl.hpp"
+#include "../gl/framebuffer.hpp"
+#include "../gl/texture.hpp"
 
 namespace squint::fx {
+  struct StageContext;
+
+  /*
+   * Intermediate stages must have the following signature:
+   *
+   * void intermediateStage(const StageContext& context);
+   */
   template<typename Func>
-  concept IntermediateStage = requires (Func f, int a, int b) {
-    { f(a, b) } -> std::same_as<void>;
+  concept IntermediateStage = requires (Func f, const StageContext& context) {
+    { f(context) } -> std::same_as<void>;
   };
 
+
+  /*
+   * Terminator stages terminate the current pipeline by returning *something*:
+   * 
+   * T terminatorStage(const StageContext& context);
+   */
   template<typename Func>
-  concept TerminatorStage = std::is_invocable_v<Func, int, int> &&
-                            !std::is_same_v<std::invoke_result_t<Func, int, int>, void>;
+  concept TerminatorStage = std::is_invocable_v<Func, const StageContext&> &&
+                            !std::is_same_v<std::invoke_result_t<Func, const StageContext&>, void>;
 
-  struct Pixelate {
-    float pixels;
-
-    void operator()(int& front, int back) {
-      std::cout << "Pixelate" << std::endl;
-      front = back + 2;
-    }
+  struct StageContext {
+    GLuint previousTexture;
   };
-
-  void GaussianBlur(int& front, int back) {
-    std::cout << "GaussianBlur" << std::endl;
-    front = back * 2;
-  }
-
-  int ToImage(int front, int back) {
-    std::cout << "ToImage" << std::endl;
-    return back;
-  }
-
-  int Test(int foo) {
-    return foo;
-  }
-
 
   class Pipeline final {
   public:
-    static Pipeline fromScreenshot(const auto&) {
-      return {};
-    }
-
-    void swapBuffers() {
-      using std::swap;
-      swap(front_, back_);
-    }
+    Pipeline(int width, int height);
 
     template<IntermediateStage Stage>
     Pipeline& operator|(Stage&& stage) {
-      std::cout << "--------------------------------------------------------------------------------\n";
-      std::cout << counter_++ << "| F: " << front_ << " B: " << back_ << std::endl;
-      stage(front_, back_);
-      std::cout << "--------------------------------------------------------------------------------" << std::endl;
-      swapBuffers();
+      stage({ *backTexture_ });
+      prepareNextStage();
       return *this;
     }
 
     template<TerminatorStage Stage>
     auto operator|(Stage&& stage) {
-      std::cout << "--------------------------------------------------------------------------------\n";
-      std::cout << counter_++ << "| F: " << front_ << " B: " << back_ << " | TERMINATED" << std::endl;
-      auto value = stage(front_, back_);
-      std::cout << "--------------------------------------------------------------------------------" << std::endl;
+      auto value = stage({ *backTexture_ });
+      prepareNextStage();
       return value;
     }
 
   private:
-    int front_, back_;
-    int counter_;
+    int width_, height_;
+    gl::Framebuffer frontBuffer_, backBuffer_;
+    gl::Texture frontTexture_, backTexture_;
 
-    Pipeline() noexcept : front_{0}, back_{0}, counter_{0} {}
+    void prepareNextStage();
   };
   }

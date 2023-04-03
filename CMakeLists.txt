@@ -54,6 +54,8 @@ add_executable(
   src/x11/screenshot.cpp
   src/x11/gl_context.hpp
   src/x11/gl_context.cpp
+  src/fx/pipeline.hpp
+  src/fx/pipeline.cpp
   ${GENERATED_SHADER_HEADERS}
 )
 
