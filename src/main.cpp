@@ -10,6 +10,7 @@
 #include "fx/pipeline.hpp"
 #include "fx/set_image.hpp"
 #include "fx/peek_image.hpp"
+#include "fx/fullscreen_quad.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -34,6 +35,8 @@ int main(int, char**) {
    * FX PIPELINE EXPERIMENT
    */
   std::vector<char> outputBuffer(output->width * output->height * 4, 0);
+
+  squint::fx::FullscreenQuad quad;
 
   squint::fx::Pipeline{output->width, output->height}
   | [](const squint::fx::StageContext&) {

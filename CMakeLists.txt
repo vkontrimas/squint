@@ -59,6 +59,7 @@ add_executable(
   src/fx/pipeline.cpp
   src/fx/set_image.hpp
   src/fx/peek_image.hpp
+  src/fx/fullscreen_quad.hpp
   ${GENERATED_SHADER_HEADERS}
 )
 
