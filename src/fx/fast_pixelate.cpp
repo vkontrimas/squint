@@ -2,8 +2,9 @@
 #include "fullscreen_quad.hpp"
 #include "stage_context.hpp"
 
-#include <squint/glsl/fast_pixelate.frag.h>
-#include <squint/glsl/quad.vert.h>
+
+extern const char squint_glsl_quad_vert[];
+extern const char squint_glsl_fast_pixelate_frag[];
 
 namespace squint::fx {
   FastPixelate::FastPixelate(float pixelSize, FullscreenQuad* fullscreenQuad) 

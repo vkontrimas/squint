@@ -55,6 +55,7 @@ add_executable(
   src/x11/screenshot.cpp
   src/x11/gl_context.hpp
   src/x11/gl_context.cpp
+  src/glsl/shaders.cpp
   src/fx/stage_context.hpp
   src/fx/pipeline.hpp
   src/fx/pipeline.cpp
