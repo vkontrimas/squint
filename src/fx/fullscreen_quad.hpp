@@ -31,6 +31,9 @@ namespace squint::fx {
 
       glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+      glDisableVertexAttribArray(vertexLocation);
+      glDisableVertexAttribArray(uvLocation);
     }
 
   private:
