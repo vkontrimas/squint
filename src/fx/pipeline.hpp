@@ -36,6 +36,7 @@ namespace squint::fx {
     template<IntermediateStage Stage>
     Pipeline& operator|(Stage&& stage) {
       stage({ 
+        width_, height_,
         *frontTexture_,
         *backTexture_ 
       });
@@ -46,6 +47,7 @@ namespace squint::fx {
     template<TerminatorStage Stage>
     auto operator|(Stage&& stage) {
       auto value = stage({
+        width_, height_,
         *frontTexture_,
         *backTexture_
       });
