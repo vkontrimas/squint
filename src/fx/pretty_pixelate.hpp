@@ -19,7 +19,16 @@ namespace squint::fx {
     FullscreenQuad* fullscreenQuad_;
     gl::Framebuffer downscaleFramebuffer_;
     gl::Texture downscaleTexture_;
-    gl::Program averageProgram_;
-    gl::Program upscaleProgram_;
+
+    struct Shader {
+      gl::Program program;
+      GLuint vertexLocation;
+      GLuint uvLocation;
+
+      Shader(const char* fragSource);
+    };
+
+    Shader average_;
+    Shader upscale_;
   };
 }
