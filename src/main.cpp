@@ -6,7 +6,7 @@
 #include "fx/set_image.hpp"
 #include "fx/peek_image.hpp"
 #include "fx/fullscreen_quad.hpp"
-#include "fx/fast_pixelate.hpp"
+#include "fx/pretty_pixelate.hpp"
 
 #include <X11/Xlib.h> // we depend on XImage rn...
 
@@ -28,7 +28,7 @@ int main(int, char**) {
     glClear(GL_COLOR_BUFFER_BIT);
   }
   | squint::fx::SetImage{output->width, output->height, output->data}
-  | squint::fx::FastPixelate{24, &fullscreenQuad}
+  | squint::fx::PrettyPixelate{24, &fullscreenQuad}
   | squint::fx::PeekImage{outputBuffer.data()};
 
   std::fstream file {"test.raw", std::ios::binary | std::ios::out};
