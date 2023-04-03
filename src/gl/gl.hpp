@@ -104,6 +104,9 @@ extern glFramebufferTexture2DProc* glFramebufferTexture2D;
 using glCheckFramebufferStatusProc = GLenum(GLenum);
 extern glCheckFramebufferStatusProc* glCheckFramebufferStatus;
 
+using glBlitFramebufferProc = void(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
+extern glBlitFramebufferProc* glBlitFramebuffer;
+
 namespace squint::gl {
   using GetProcAddressFuncT = void* (const char*);
   void loadGL(GetProcAddressFuncT* getProcAddress);

@@ -42,6 +42,7 @@ glBindFramebufferProc* glBindFramebuffer = nullptr;
 glFramebufferRenderbufferProc* glFramebufferRenderbuffer = nullptr;
 glFramebufferTexture2DProc* glFramebufferTexture2D = nullptr;
 glCheckFramebufferStatusProc* glCheckFramebufferStatus = nullptr;
+glBlitFramebufferProc* glBlitFramebuffer = nullptr;
 
 void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
   glGenBuffers = (glGenBuffersProc*)getProcAddress("glGenBuffers");
@@ -78,6 +79,7 @@ void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
   glFramebufferRenderbuffer = (glFramebufferRenderbufferProc*)getProcAddress("glFramebufferRenderbuffer");
   glFramebufferTexture2D = (glFramebufferTexture2DProc*)getProcAddress("glFramebufferTexture2D");
   glCheckFramebufferStatus = (glCheckFramebufferStatusProc*)getProcAddress("glCheckFramebufferStatus");
+  glBlitFramebuffer = (glBlitFramebufferProc*)getProcAddress("glBlitFramebuffer");
 
   // Set up error callback in debug build
   // TODO: Check if GL version supports it! This function is from OpenGL 4+
