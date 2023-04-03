@@ -65,6 +65,9 @@ extern glGetAttribLocationProc* glGetAttribLocation;
 using glEnableVertexAttribArrayProc = void(GLuint);
 extern glEnableVertexAttribArrayProc* glEnableVertexAttribArray;
 
+using glDisableVertexAttribArrayProc = void(GLuint);
+extern glDisableVertexAttribArrayProc* glDisableVertexAttribArray;
+
 using glVertexAttribPointerProc = void(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid*);
 extern glVertexAttribPointerProc* glVertexAttribPointer;
 
