@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../gl/program.hpp"
 #include "../gl/texture.hpp"
 #include "../gl/framebuffer.hpp"
 
@@ -18,5 +19,7 @@ namespace squint::fx {
     FullscreenQuad* fullscreenQuad_;
     gl::Framebuffer downscaleFramebuffer_;
     gl::Texture downscaleTexture_;
+    gl::Program averageProgram_;
+    gl::Program upscaleProgram_;
   };
 }

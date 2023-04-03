@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 
+extern const char squint_glsl_quad_vert[];
 extern const char squint_glsl_average_frag[];
 extern const char squint_glsl_upscale_frag[];
 
@@ -13,7 +14,9 @@ namespace squint::fx {
     : pixelSize_{pixelSize},
       fullscreenQuad_{fullscreenQuad},
       downscaleFramebuffer_{gl::genFramebuffer()},
-      downscaleTexture_{gl::genTexture()} {
+      downscaleTexture_{gl::genTexture()},
+      averageProgram_{gl::compileProgram(squint_glsl_quad_vert, squint_glsl_average_frag)},
+      upscaleProgram_{gl::compileProgram(squint_glsl_quad_vert, squint_glsl_upscale_frag)} {
     const int downscaledWidth = static_cast<int>(std::round(width / pixelSize));
     const int downscaledHeight = static_cast<int>(std::round(height / pixelSize));
     std::cout << "PPIX: orig w " << width << " h " << height
