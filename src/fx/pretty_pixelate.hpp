@@ -1,17 +1,22 @@
 #pragma once
 
+#include "../gl/texture.hpp"
+#include "../gl/framebuffer.hpp"
+
 namespace squint::fx {
   struct StageContext;
   struct FullscreenQuad;
 
   class PrettyPixelate {
   public:
-    PrettyPixelate(float pixelSize, FullscreenQuad*);
+    PrettyPixelate(float pixelSize, FullscreenQuad*, int width, int height);
 
     void operator()(const StageContext&);
 
   private:
     float pixelSize_;
     FullscreenQuad* fullscreenQuad_;
+    gl::Framebuffer downscaleFramebuffer_;
+    gl::Texture downscaleTexture_;
   };
 }

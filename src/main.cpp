@@ -28,7 +28,7 @@ int main(int, char**) {
     glClear(GL_COLOR_BUFFER_BIT);
   }
   | squint::fx::SetImage{output->width, output->height, output->data}
-  | squint::fx::PrettyPixelate{24, &fullscreenQuad}
+  | squint::fx::PrettyPixelate{24, &fullscreenQuad, output->width, output->height}
   | squint::fx::PeekImage{outputBuffer.data()};
 
   std::fstream file {"test.raw", std::ios::binary | std::ios::out};
