@@ -58,6 +58,7 @@ add_executable(
   src/fx/pipeline.hpp
   src/fx/pipeline.cpp
   src/fx/set_image.hpp
+  src/fx/peek_image.hpp
   ${GENERATED_SHADER_HEADERS}
 )
 
