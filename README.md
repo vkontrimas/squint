@@ -19,7 +19,7 @@ with X11 and OpenGL.
 - Dynamic configuration    
   (Currently I'm hardcoding things as I develop.)
 - More filters! ✨
-- Multiple displays! 🖥🖥🖥
+- Multiple displays! 🖥🖥🖥    
   *Currently running a single display so multi-display set ups will need
   testing.*
 - `i3lock` replacement with live blurring 🚀    
