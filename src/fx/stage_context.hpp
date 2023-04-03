@@ -7,5 +7,7 @@ namespace squint::fx {
     int width, height;
     GLuint frontTexture;
     GLuint backTexture;
+    GLuint frontBuffer;
+    GLuint backBuffer;
   };
 }

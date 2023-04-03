@@ -38,7 +38,9 @@ namespace squint::fx {
       stage({ 
         width_, height_,
         *frontTexture_,
-        *backTexture_ 
+        *backTexture_,
+        *frontBuffer_,
+        *backBuffer_
       });
       prepareNextStage();
       return *this;
@@ -49,7 +51,9 @@ namespace squint::fx {
       auto value = stage({
         width_, height_,
         *frontTexture_,
-        *backTexture_
+        *backTexture_,
+        *frontBuffer_,
+        *backBuffer_
       });
       prepareNextStage();
       return value;
