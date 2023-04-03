@@ -11,8 +11,8 @@ Wayland too.
 ### Storytime
 Wrote this because I got fed up with the tiny 3s delay of my `maim + imagemagick`
 solution on my 4k screen. Rather than looking for existing solutions, I decided
-to play around with X11 and OpenGL a little. Consequently, I am also calling
-directly into XLib and loading GL functions myself.
+to play around with X11 and OpenGL. For this reason, I am calling directly into
+XLib and loading GL functions myself.
 
 # To do
 - ~~Pixelate~~
