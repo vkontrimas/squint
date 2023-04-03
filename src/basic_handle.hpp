@@ -6,6 +6,8 @@ namespace squint {
   template<typename HandleT, typename DeleterT>
   class BasicHandle {
   public:
+    BasicHandle() noexcept : handle_{} {}
+
     BasicHandle(HandleT&& handle) noexcept
       : handle_{std::forward<HandleT>(handle)} {}
 
