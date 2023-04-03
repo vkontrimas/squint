@@ -40,6 +40,7 @@ glGenFramebuffersProc* glGenFramebuffers = nullptr;
 glDeleteFramebuffersProc* glDeleteFramebuffers = nullptr;
 glBindFramebufferProc* glBindFramebuffer = nullptr;
 glFramebufferRenderbufferProc* glFramebufferRenderbuffer = nullptr;
+glFramebufferTexture2DProc* glFramebufferTexture2D = nullptr;
 glCheckFramebufferStatusProc* glCheckFramebufferStatus = nullptr;
 
 void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
@@ -75,6 +76,7 @@ void squint::gl::loadGL(GetProcAddressFuncT* getProcAddress) {
   glDeleteFramebuffers = (glDeleteFramebuffersProc*)getProcAddress("glDeleteFramebuffers");
   glBindFramebuffer = (glBindFramebufferProc*)getProcAddress("glBindFramebuffer");
   glFramebufferRenderbuffer = (glFramebufferRenderbufferProc*)getProcAddress("glFramebufferRenderbuffer");
+  glFramebufferTexture2D = (glFramebufferTexture2DProc*)getProcAddress("glFramebufferTexture2D");
   glCheckFramebufferStatus = (glCheckFramebufferStatusProc*)getProcAddress("glCheckFramebufferStatus");
 
   // Set up error callback in debug build

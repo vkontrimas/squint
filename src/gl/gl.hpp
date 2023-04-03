@@ -98,6 +98,9 @@ extern glBindFramebufferProc* glBindFramebuffer;
 using glFramebufferRenderbufferProc = void(GLenum, GLenum, GLenum, GLuint);
 extern glFramebufferRenderbufferProc* glFramebufferRenderbuffer;
 
+using glFramebufferTexture2DProc = void(GLenum, GLenum, GLenum, GLuint, GLint);
+extern glFramebufferTexture2DProc* glFramebufferTexture2D;
+
 using glCheckFramebufferStatusProc = GLenum(GLenum);
 extern glCheckFramebufferStatusProc* glCheckFramebufferStatus;
 
